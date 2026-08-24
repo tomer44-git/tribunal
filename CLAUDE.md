@@ -4,6 +4,35 @@ Tribunal is the ASE-26 running project. A user submits a charge sheet; a panel o
 four advocates and three judges deliberates; the output is three reasoned verdicts,
 shown side by side and never combined.
 
+The specification is fixed and shared: it is in `docs/case-package.pdf` and it is
+not mine to revise. How this project is worked is in `docs/method.md`. Read both
+before proposing anything.
+
+## The record
+
+The git history is as much a product of this project as the code. It is read and
+judged on its own, so it is written on purpose and never left as a side effect.
+
+Commit before you begin a step, not only after. A commit that exists before the
+work is the record that the work was directed.
+
+Push after every commit. A commit that only exists on this machine is not part of
+the record.
+
+One message, one change. A schema change and a screen change never share a
+commit.
+
+Say what actually changed. If it cannot be said in one line, the commit is too
+big.
+
+Never amend, squash, rebase or force push. A messy honest history is worth more
+than a clean invented one.
+
+Work stays on its branch until I merge it myself.
+
+If you correct the same thing twice, stop and tell me — it belongs here as a rule,
+not in the chat.
+
 ## Conventions
 
 TypeScript throughout. Supabase (Postgres) for data, Netlify for hosting,
@@ -55,9 +84,6 @@ the time. A call that ran and was not written down did not happen.
 
 The browser may check a charge sheet for completeness so the user is not kept
 waiting. The check that decides runs on the server, always.
-
-Commit before you invoke an agent. One message, one change, and say what actually
-changed.
 
 Document what the code does. Do not invent why it is that way — if the reason is
 not written down anywhere, ask me for it.
