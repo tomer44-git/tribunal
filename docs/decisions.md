@@ -59,8 +59,8 @@ I will see it and correct it.
 **Decided.** Every judge's output carries one further field beside the verdict and
 the reasons: a single sentence naming what, inside that judge's own method,
 carried the decision. It is free text, it is required, and it is checked for
-presence and length only — never for wording. The field name is settled with the
-rest of the output format.
+presence and length only — never for wording. The field is called
+`controlling_ground`.
 
 I considered a fixed vocabulary per judge and rejected it. The package gives three
 profiles in prose, not three lists of tests, so an enumeration would mean
