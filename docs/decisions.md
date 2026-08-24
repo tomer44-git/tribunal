@@ -11,9 +11,9 @@ position. It also fixes the scope: the Tribunal decides and gives reasons, and i
 does not combine the three opinions into one.
 
 What the package leaves to me is the structured output format and what follows
-from it. Five questions are open. They are recorded here before they are answered,
-so that the order — question, argument, decision — is visible in the record rather
-than asserted after the fact.
+from it. Five questions were left open. Each was written down here before it was
+answered, so that the order — question, argument, decision — is visible in the
+record rather than asserted after the fact.
 
 ---
 
@@ -166,7 +166,43 @@ for T-001.
 
 ---
 
-## Still open
+## 5. A judge sees the seat, not the advocate
 
-5. Does a judge see which advocate made which argument, or are the four presented
-   unattributed?
+**Decided.** The judges' prompts present the four arguments by seat — defence or
+prosecution — and not by name. The screen and the log carry full attribution, name
+and seat both. This is a decision about what goes into a judge's prompt and
+nothing else; nobody reading the output loses anything.
+
+Full attribution is how a real court works, and the four characters are vivid
+enough that hiding them costs something. What it would put into a judge's prompt is
+one strange fact: the prosecution seat is held by the deceased. A judge told that
+Daenerys Targaryen is making submissions has to reconcile that against a factual
+record stating she was killed, and that reconciliation is off-task and
+unpredictable. Grey Worm carries a weaker version of the same problem — weighing an
+argument from a named participant in the burning of King's Landing is not a
+judicial method.
+
+The honest objection to my own reasoning is that the characters are already in the
+room. The charge sheet names them, and whatever the models believe about this story
+is engaged the moment the case is read. Hiding the advocates' names removes none of
+that. It removes only the artefact of the dead woman speaking — but that artefact
+is the one that produces behaviour I cannot predict, and the seat costs nothing to
+use instead.
+
+The character profiles are instructions for producing four different arguments.
+They are not evidence for weighing them.
+
+Dropping attribution altogether was the third option and I am not taking it. Side is
+usually inferable from the content anyway, and a judge who cannot tell prosecution
+from defence cannot write that the defence's necessity claim fails — which is the
+kind of sentence the three judicial profiles exist to produce.
+
+This decision and the first hold each other up. Because the judges see an advocate's
+position, a defence-seat advocate that concluded not justified reaches them as
+"defence seat — position: not justified": the crossing arrives as a procedural fact,
+without importing the character.
+
+---
+
+All five are closed. They are carried into `CLAUDE.md` at step 1, which is where
+`docs/method.md` puts that work.
