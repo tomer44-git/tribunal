@@ -89,9 +89,35 @@ be worth nothing.
 
 ---
 
+## 3. An advocate's position is logged apart from the verdicts
+
+**Decided.** A judge's verdict and an advocate's position are recorded separately.
+They are never written into one shared column, and no query that adds up a case's
+outcomes can return seven. Every row also carries its own status — complete,
+malformed, failed — so that an empty field is never ambiguous. The columns
+themselves belong to the data model and are settled in step 4; what is settled
+here is that the two are kept apart.
+
+The question as I first put it assumed a single verdict column, and that
+assumption was the trap. Every row already carries its role, so nothing is
+strictly lost by sharing a column — but the obvious query, *count the justified
+verdicts on this case*, then returns seven and returns it silently. My boundary
+says three verdicts go out as three. A column that makes the forbidden aggregate
+the easy one is working against me, and after decision 1 this is no longer
+hypothetical: there are four positions to record, and they use the same two words
+the verdicts use.
+
+Leaving the column empty for advocates fails for a different and worse reason. The
+emptiness would mean two unrelated things — *advocate, not applicable* and *judge,
+the answer came back malformed* — and those two must never be confusable. A
+missing verdict that reads as absence by design is exactly how a broken run enters
+the record looking healthy. That is why the status sits on every row rather than
+being inferred from what is or is not filled in.
+
+---
+
 ## Still open
 
-3. What is recorded in the log's verdict column for an advocate call?
 4. What happens when parsing fails twice? The rule is to demand the fixed shape
    twice, and a third attempt would break the eight-call cap.
 5. Does a judge see which advocate made which argument, or are the four presented
