@@ -116,9 +116,57 @@ being inferred from what is or is not filled in.
 
 ---
 
+## 4. A failure is shown as a failure, and the retry is one per deliberation
+
+**Decided.** The spare call is one retry for the whole deliberation, not one per
+agent. The first malformed or failed answer claims it; a second failure in the same
+run has no retry left. `CLAUDE.md` has been corrected to say so.
+
+When the shape does not arrive, the answer is never repaired and never replaced. A
+verdict is not extracted from prose by keyword, and no default or blank verdict is
+written. What happens then depends on which wave failed:
+
+- **A judge fails.** That seat is recorded as failed and shown as a failure on the
+  screen. The other two opinions stand and are displayed. Two reasoned opinions and
+  one visible failure are an honest record; three opinions where one was
+  manufactured are not.
+- **An advocate fails.** The run stops before the judge wave. The run is recorded
+  as failed and the advocate is named.
+
+The arithmetic forced the first part. Asking for the fixed shape twice and capping
+a deliberation at eight calls cannot both mean what they appear to mean: seven
+panel calls and one spare give exactly one second ask for the whole run. Raising
+the cap would break a boundary I set on purpose and invalidate the token figures I
+have already published in `docs/02-cognified-economics.md`. The cheaper thing to
+move was the wording, so the wording moved.
+
+Extracting a verdict from prose is the option I would refuse even if I talked
+myself into it later. It produces a verdict indistinguishable from a real one,
+which is precisely the well-formed wrong answer my own module 9 essay says a shape
+check can never catch. A default verdict is named in `CLAUDE.md` as the worst thing
+this system can do. Both are ways of inventing a record, and this project exists to
+keep one.
+
+Failing the whole deliberation on any error is clean and I understand its appeal — a
+tribunal that lost a judge did not deliberate. I am not taking it, because it
+discards calls I have already paid for and hides which agent broke, and which agent
+broke is exactly what step 7 needs to read.
+
+Stopping before the judge wave when an advocate fails is the part I am least
+certain of, and I am recording the doubt rather than hiding it. Three arguments
+might still make a real deliberation. But the judges run on the capable model, so
+that is the expensive half of the run spent on input that no longer matches the
+specification and that I cannot compare against any other run in the prompt log.
+
+None of this touches what the package fixes. The package says nothing about call
+counts, retries, or what to do when an answer comes back broken; it fixes what a
+complete deliberation is. So one thing follows from it and is binding: a run with
+two opinions is an incomplete run, and it is never displayed as a finished result
+for T-001.
+
+---
+
 ## Still open
 
-4. What happens when parsing fails twice? The rule is to demand the fixed shape
-   twice, and a third attempt would break the eight-call cap.
 5. Does a judge see which advocate made which argument, or are the four presented
    unattributed?
