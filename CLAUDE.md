@@ -116,6 +116,11 @@ and has no written source, ask me — do not assume.
 
 ## When to stop and ask me
 
+Proposals belong in the chat. Only a decision I have actually stated goes into a
+file. If you are unsure whether I decided something or merely discussed it, ask
+before writing it down — every document in `docs/` has to read as my reasoning,
+not yours.
+
 Do not change the database schema on your own. It holds the record of every call,
 and a break in that record cannot be reconstructed later.
 
