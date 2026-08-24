@@ -54,10 +54,43 @@ I will see it and correct it.
 
 ---
 
+## 2. A judge names the ground that decided the case
+
+**Decided.** Every judge's output carries one further field beside the verdict and
+the reasons: a single sentence naming what, inside that judge's own method,
+carried the decision. It is free text, it is required, and it is checked for
+presence and length only — never for wording. The field name is settled with the
+rest of the output format.
+
+I considered a fixed vocabulary per judge and rejected it. The package gives three
+profiles in prose, not three lists of tests, so an enumeration would mean
+inventing a rubric the specification does not contain and then forcing three
+simulated judges into it. `CLAUDE.md` already says to check the shape of an answer
+and never the wording. A closed list of grounds is a wording check wearing a shape
+check's clothes, and it would leave me with three different schemas and three
+times the surface for a parse failure.
+
+What the field is worth is that it makes my own stop condition legible. Step 7 in
+`docs/method.md` says to stop when the three judges sound genuinely unlike one
+another, and today that is an impression formed by reading three long opinions.
+Three judges reaching justified on three different grounds and three reaching it
+on the same ground are not the same result, and without this field they look
+identical in a table. The first is the panel working. The second is the panel
+collapsing, and I have written that unanimity is a signal to look at the prompts.
+
+One thing has to be recorded about what the field is not. It is not the model
+explaining itself, and I do not read it as an account of how the text was
+produced — a model asked why it wrote something will supply a reason whether or
+not one operated. It is a line of the opinion, written by the character, doing
+what the profiles say these judges do: Shamgar isolates the governing provision,
+Barak divides a principle into tests and applies each in sequence. Read as the
+character's ground it is worth its thirty tokens. Read as introspection it would
+be worth nothing.
+
+---
+
 ## Still open
 
-2. Does a judge's output carry a field naming what in its own method decided the
-   case?
 3. What is recorded in the log's verdict column for an advocate call?
 4. What happens when parsing fails twice? The rule is to demand the fixed shape
    twice, and a third attempt would break the eight-call cap.
