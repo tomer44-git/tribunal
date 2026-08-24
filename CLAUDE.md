@@ -91,9 +91,12 @@ not written down anywhere, ask me for it.
 ## Known traps
 
 A judge may answer in prose instead of the format it was given. Ask for the fixed
-shape twice, and check it on the way in.
+shape twice, and check it on the way in. The second ask is the one spare call, so
+it is one retry per deliberation and not one per agent — the first failure of any
+kind claims it, and the next failure in that run has no retry left.
 
-A model call may time out. Retry once, then show the failure.
+A model call may time out. Retry once if the spare is still unspent, then show the
+failure.
 
 A charge sheet may arrive without its question. Reject it before any call is made.
 
