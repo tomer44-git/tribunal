@@ -118,3 +118,45 @@ can be posted directly and spend seven paid calls.
 The rules exist once and both places read them. Two copies of the same rules drift,
 and the day they drift the browser accepts what the server refuses, or worse, the
 browser refuses what the server would have accepted and nobody finds out why.
+
+## What this check cannot catch
+
+Everything above is a floor. None of it is a test of whether a charge sheet is any
+good, and it is worth being exact about the gap rather than letting the rules imply
+a protection they do not provide.
+
+A sheet can satisfy every rule on this page and still be vague. It can carry four
+hundred words of background that establish nothing, three agreed facts that no
+argument turns on, and a question broad enough that four advocates read four
+different problems out of it. Nothing errors. Seven calls run, three opinions come
+back, and they disagree about different things while appearing to disagree about
+one. **That failure is invisible to code and it is mine to read.**
+
+The same limit applies to the question in particular. Whether a question is
+actually answerable by justified or not justified is a matter of meaning, and no
+rule written against a string decides it. A question those two values do not fit
+will still be answered by three judges, in the fixed shape, with reasons — and the
+answer will be to a different question than the one asked.
+
+I considered handing this to a model and did not. The model here builds arguments
+and reaches verdicts, and nothing else; validation is plain code. A model asked to
+grade a charge sheet is a call that spends against the cap in order to produce a
+judgement I would have to check anyway.
+
+## Known pitfalls
+
+A sheet arrives without its question. Rejected before any call — the one rule with
+no exception.
+
+A sheet is too short. Caught by the floors, which is the whole reason they are
+there.
+
+A sheet is complete and vague. Not caught. Read the three opinions: when they are
+answering different problems rather than disagreeing about one, the sheet was the
+fault and not the panel.
+
+A sheet is padded. The ceiling catches the extreme case. Everything under it is
+paid for seven times, so the cost of a loose sheet is real even when it is legal.
+
+The browser check is treated as the check. It never is. The server check runs on
+every submission regardless of what the client says it did.
