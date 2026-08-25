@@ -133,6 +133,17 @@ kind claims it, and the next failure in that run has no retry left.
 A model call may time out. Retry once if the spare is still unspent, then show the
 failure.
 
+Seven agents on seven models are seven providers that can be rate-limited, queued
+or down, and only one of those failures can be retried. One model for everyone had
+one way to fail. This has seven, and the second failure in a run has no spare left.
+That is the price of the panel being seven independent readings, and it is paid
+knowingly.
+
+A request may not be served by the model it asked for. A gateway can route
+elsewhere when a provider is unavailable, and a log that records what was requested
+instead of what answered describes a run that did not happen. Write down the model
+named in the response.
+
 A charge sheet may arrive without its question. Reject it before any call is made.
 
 A vague charge sheet produces four arguments about four different problems, and
