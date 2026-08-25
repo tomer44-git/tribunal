@@ -58,12 +58,13 @@ The judges are shown the four arguments by seat — defence or prosecution — a
 by name. Full attribution belongs on the screen and in the log, not inside a
 judge's prompt.
 
-Advocates run on a cheap model and judges on a capable one, because building one
-side of an argument is not the same work as weighing four of them. The model
-names live in config, not here.
+Every agent runs on its own model, seven in all. Building one side of an argument
+is not the same work as weighing four of them, and that difference is one of seven
+choices rather than the only one. The model names live in config, not here.
 
-The charge sheet is identical across all seven calls, so it is sent as the cached
-part of the prompt.
+The charge sheet is identical across all seven calls, but no two agents share a
+model, so no model reads it twice and there is nothing for a cache to hold. Its
+length is paid seven times in full.
 
 ## Boundaries
 
