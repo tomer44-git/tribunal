@@ -169,3 +169,68 @@ for before it is installed.
 The waves are built before the failure handling, and the screen before the
 economics, because each of those pairs is testable on its own and a broken second
 half never hides a broken first half.
+
+## The checks this build is measured against
+
+Two groups. The first spends nothing and runs whenever anything changes. The second
+costs money and is run by hand.
+
+### Checks that spend nothing
+
+These use recorded responses, never a live model.
+
+**The charge sheet**
+
+- a sheet without a question is refused, and no call is made
+- fewer than three agreed facts, two identical facts, background under 150 or over
+  400 words, an act alleged under ten words — each refused on its own
+- a refusal names every field that failed, not the first
+- the same rules produce the same answer in the browser and on the server
+
+**The shape of an answer**
+
+- an answer with one reason is malformed, not complete
+- an answer missing `controlling_ground` from a judge is malformed
+- a verdict outside the two fixed values is malformed
+- prose that contains the word justified is malformed, and no verdict is taken from
+  it
+
+**The record**
+
+- a malformed or failed call still writes a row
+- a row that is not complete carries neither a position nor a verdict — attempted
+  directly against the database, so that the constraint is what is being tested and
+  not the code in front of it
+- an advocate row carries no verdict; a judge row carries no position
+- `tokens_in` and `tokens_out` are present and separate
+- the row names the model that answered
+
+**The rules of the panel**
+
+- a deliberation makes at most eight calls
+- the spare is claimed by the first failure and is not available to the second
+- an advocate failure stops the run before the judge wave
+- a judge failure leaves the other two opinions standing and shows the third as a
+  failure
+- a run's totals equal the sum of its rows
+- nothing in the output merges, ranks or averages the three verdicts
+
+### The check that spends
+
+One smoke run of case T-001 against the real seven models. Roughly four cents.
+
+- seven calls, seven rows, seven models named in the responses
+- three opinions come back in the fixed shape
+- the run's cost lands under `MAX_USD_PER_DELIBERATION`
+- the whole deliberation finishes inside the function timeout
+
+**It is never automatic.** Not on a commit, not in a deployment, not on a file save.
+A loop can spend faster than anyone is watching, and this is the only thing in the
+project that spends at all.
+
+## What finished looks like
+
+Every check above passes and is written down as passed or failed. A charge sheet can
+be submitted, refused when it should be, and run when it is sound. Three opinions
+appear side by side and are not combined. A failure appears as a failure. The
+economics table shows what each of the seven models cost, input and output apart.
