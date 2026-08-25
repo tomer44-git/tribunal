@@ -118,3 +118,54 @@ Mikael asked for stops being reproducible the moment a provider changes a price.
 `raw_response` is kept even when the answer parsed cleanly. When a model returns
 prose instead of the fixed shape in step 7, the text it actually returned is the
 only evidence of why, and by then the call is gone.
+
+## The order of the work
+
+Each of these is a commit or a short run of them, and each leaves the project
+working. Nothing here adds a dependency; if one turns out to be needed, it is asked
+for before it is installed.
+
+1. **The skeleton.** TypeScript, the Netlify function entry point, the build
+   command and publish directory that the first deployment was deliberately left
+   without. The red deploy turns green here and nowhere earlier.
+
+2. **The schema.** The three tables above, once approved, as a migration held in the
+   repository. Row-level security on, no policies.
+
+3. **The charge sheet rules.** One module holding the rules from
+   `docs/charge-sheet-spec.md`, imported by the browser for courtesy and by the
+   server for the decision. One source, two callers.
+
+4. **Submission and storage.** A sheet arrives, is checked on the server, and is
+   either stored or refused with every failing field named. No model call exists in
+   the codebase yet, so at this point it is impossible to spend anything.
+
+5. **One call, logged.** The OpenRouter client: send, receive, write the row. The
+   row records the model named in the response. This step is finished when a single
+   call produces a complete row with tokens counted apart, prices captured and cost
+   worked out.
+
+6. **The advocate wave.** Four calls together, four rows, four positions.
+
+7. **The judge wave.** Three calls together, after the advocates. The four
+   submissions are assembled by seat and not by name, each carrying the position its
+   author reached.
+
+8. **Failure and the spare.** The retry, claimed once per deliberation. A judge that
+   fails leaves its seat showing a failure and the other opinions standing; an
+   advocate that fails stops the run before the judge wave. This is built as its own
+   step rather than folded into the two above, because it is the behaviour most
+   easily left half-done and hardest to notice missing.
+
+9. **The screen.** Three opinions side by side, never merged. Each carries its
+   verdict, its reasons and its `controlling_ground`. A seat that failed shows the
+   failure in place. The four submissions are shown with full attribution — name and
+   seat — because attribution was only ever withheld from a judge's prompt.
+
+10. **The economics.** The per-call table Mikael asked for: model, price in, price
+    out, tokens in, tokens out, cost, time. Then the run's totals underneath it,
+    added up in plain code from the rows.
+
+The waves are built before the failure handling, and the screen before the
+economics, because each of those pairs is testable on its own and a broken second
+half never hides a broken first half.
