@@ -44,6 +44,15 @@ shows up as its own diff and can be reviewed on its own.
 A deliberation runs in two waves: the four advocates together, then the three
 judges together. Judges wait for the advocates, not for each other.
 
+An advocate returns a stated position as well as an argument. The field is called
+`position` and takes the same two values a verdict takes, because the seat fixes
+the procedural role and never the conclusion. The judges read it along with the
+argument.
+
+The judges are shown the four arguments by seat — defence or prosecution — and not
+by name. Full attribution belongs on the screen and in the log, not inside a
+judge's prompt.
+
 Advocates run on a cheap model and judges on a capable one, because building one
 side of an argument is not the same work as weighing four of them. The model
 names live in config, not here.
@@ -61,7 +70,8 @@ verdict. Everything else — validation, storage, retrieval, totals, display —
 plain code.
 
 Do not add a layer that merges, ranks or averages verdicts. Three verdicts go out
-as three.
+as three. An advocate's position is not a verdict and is never counted with
+them.
 
 A deliberation may make at most eight model calls: seven for the panel, one spare
 for a single retry. Cap what a single run may spend.
@@ -75,12 +85,31 @@ An opinion is complete when it carries a verdict, at least two reasons, and the
 fields that were asked for. Check the shape of an answer, never the wording.
 Whether the reasoning holds is mine to read.
 
+A judge also names, in one sentence, the ground in its own method that decided the
+case. The field is called `controlling_ground` and is checked for presence and
+length only. It is a line of the opinion, written by the character. It is not the
+model explaining itself and is never read that way.
+
 When a call fails or returns something malformed, say so on the screen. A blank
 field or a default verdict entering the record is the worst thing this system can
-do.
+do. Never recover a verdict from prose that arrived in the wrong shape — a
+salvaged verdict is indistinguishable from a real one, which makes it worse than
+no verdict at all.
 
-Every model call gets its own row: the model, the verdict, the tokens, the cost,
-the time. A call that ran and was not written down did not happen.
+When the shape does not arrive and the retry is gone, which wave failed decides
+what happens. A judge that fails shows as a failure in its own seat, and the other
+opinions stand and are displayed. An advocate that fails stops the run before the
+judge wave, and the advocate is named. A run with fewer than three opinions is an
+incomplete run and is never displayed as a finished result.
+
+Every model call gets its own row: the model, what it returned, the tokens, the
+cost, the time, and its own status — complete, malformed or failed. A call that ran
+and was not written down did not happen.
+
+A judge's verdict and an advocate's position are recorded apart from each other,
+never in one shared column, so that no ordinary query can add up seven outcomes on
+one case. An empty field must never be ambiguous between not applicable and
+nothing came back, which is what the status on every row is for.
 
 The browser may check a charge sheet for completeness so the user is not kept
 waiting. The check that decides runs on the server, always.
