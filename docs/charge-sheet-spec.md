@@ -15,20 +15,48 @@ package states the background at 200 to 300 words.
 
 What the package does not settle is which of those blocks a new sheet must carry,
 how far a check written in plain code can go, and what happens at the edge where a
-sheet is complete in form and useless in substance. Those are open and are
-recorded here before they are answered.
+sheet is complete in form and useless in substance. Those are settled below.
 
 ---
 
-## Open
+## What it is for
 
-1. Which blocks must a charge sheet carry, and is any of them optional?
-2. Is the agreed factual record a list of separate items, or one block of text?
-3. Do the package's word counts become rules for every sheet, or do they stay a
-   description of T-001?
-4. How far does validation go against vagueness, which errors nothing and ruins
-   everything?
-5. Must the question be answerable by exactly the two verdict values, and can that
-   be checked in code?
+The charge sheet is the one document every agent in a deliberation reads. Four
+advocates build arguments from it and three judges weigh those arguments against
+it, so its faults do not stay where they start. A sheet that is thin makes the
+advocates invent facts, because they still have to build an argument, and the
+judges then weigh reasoning that rests on nothing. A sheet that is vague produces
+four arguments about four different problems, and the three opinions that follow
+are not really disagreeing about the same thing. Neither of those failures raises
+an error. They just waste seven paid calls and return something worthless.
 
-None of these is answered yet.
+That is why the sheet is written as fields rather than as free text. A rule
+written against a field can be stated, tested and shown to a user before anything
+is spent. A rule written against prose cannot.
+
+## The fields
+
+| Field | Required | Supplied by |
+|---|---|---|
+| `case_reference` | yes | the system |
+| `accused` | yes | the user |
+| `deceased` | no | the user |
+| `act_alleged` | yes | the user |
+| `background` | yes | the user |
+| `agreed_facts` | yes | the user |
+| `question` | yes | the user |
+
+`deceased` is the one optional field, and it is optional on purpose. It is a field
+of a killing. T-001 is a killing, but the Tribunal takes a charge sheet from a
+user and the question it answers is whether an act was justified. Requiring a body
+would make a whole class of case impossible to submit, and the package never asks
+for that.
+
+`agreed_facts` is a list of separate items, not one block of prose. The package
+wrote T-001's factual record that way itself, in five marked items, and the shape
+earns its place twice over: a list can carry a floor that can be counted, which a
+block of text cannot, and an argument can answer one item rather than gesturing at
+a paragraph.
+
+The two verdict values are not a field. The package fixes them as justified and
+not justified, so they are never supplied by a user and never varied by a case.
