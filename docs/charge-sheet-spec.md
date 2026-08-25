@@ -103,3 +103,18 @@ rejected outright.
 The refusal names every field that failed, not the first one. A user who fixes one
 fault at a time, submitting again between each, learns the rules one rejection per
 attempt, and there is no reason to make anyone pay that.
+
+## Where the check runs
+
+The browser may run these rules so that a user is told about a missing question
+immediately rather than after a wait. That check is a courtesy and nothing more.
+It runs on the user's own machine, where its code is open and can be skipped, so
+anyone able to post a request can post past it.
+
+The check that decides runs on the server, on every submission, with no exception
+for a request that claims to have been checked already. Without it an empty sheet
+can be posted directly and spend seven paid calls.
+
+The rules exist once and both places read them. Two copies of the same rules drift,
+and the day they drift the browser accepts what the server refuses, or worse, the
+browser refuses what the server would have accepted and nobody finds out why.
