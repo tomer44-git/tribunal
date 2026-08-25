@@ -87,3 +87,19 @@ the foot of each judge profile in the package, which shows what those notes are:
 constraints the author of the dossier set for the dossier, not validation the
 application is asked to perform. My range is wider on both sides and T-001 passes
 inside it comfortably.
+
+## What is rejected before any model call
+
+A charge sheet that fails any rule above is refused, and refused before the first
+call is made. Nothing is attempted on a partial sheet and no wave is started to
+see how far it gets.
+
+A sheet that arrives without its question is the case that matters most. It is the
+one failure that can look harmless — the accused is there, the facts are there,
+the sheet reads like a document — and it is the one that guarantees seven calls
+spent on nothing, because there is no question for anyone to answer. It is
+rejected outright.
+
+The refusal names every field that failed, not the first one. A user who fixes one
+fault at a time, submitting again between each, learns the rules one rejection per
+attempt, and there is no reason to make anyone pay that.
