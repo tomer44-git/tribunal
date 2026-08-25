@@ -25,6 +25,11 @@ commit.
 Say what actually changed. If it cannot be said in one line, the commit is too
 big.
 
+Every commit message begins with the step it belongs to — `step 3: ...`. A commit
+that serves the record rather than a step begins with `record:`. Each step also
+ends with a commit that says the step is closed, and carries a tag named for it.
+The history has to show where I was, not only what changed.
+
 Never amend, squash, rebase or force push. A messy honest history is worth more
 than a clean invented one.
 
