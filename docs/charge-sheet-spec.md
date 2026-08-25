@@ -76,10 +76,12 @@ actually prevent. An advocate handed three lines still has to build an argument,
 so it builds one out of invented facts, and the judges weigh it as though it
 rested on something.
 
-The ceiling is there because the charge sheet is sent as the cached part of the
-prompt and is read by all seven agents. Every word in it is paid for on every
-call, so length in this one field costs seven times what length costs anywhere
-else.
+The ceiling is there because the charge sheet is read by all seven agents. Every
+word in it is paid for on every one of the seven calls, so length in this one field
+costs seven times what length costs anywhere else. It was once going to cost less
+than that, because the repeated part would be cached; with one model per agent
+nothing repeats for any single model and there is no cache to soften it. The
+ceiling matters more now, not less.
 
 The package states T-001's background at 200 to 300 words, and I have not adopted
 that as a rule. The same kind of line — `Length check: under 300 words` — sits at
