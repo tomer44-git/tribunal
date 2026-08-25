@@ -46,9 +46,12 @@ advocate's own file. A judge call is the shared judge block, then the charge she
 then the four submissions, then that judge's own file.
 
 Everything identical inside a wave sits at the front and everything particular sits
-at the back. That is not a matter of taste. The identical part is what gets cached,
-and a cache only holds a prefix — one character of variation early in the prompt
-loses the whole saving for every call behind it.
+at the back. That ordering was first chosen for prompt caching, and caching no
+longer applies: each agent runs on its own model, so no model is sent the charge
+sheet twice in a deliberation and there is no repeated prefix to save. The ordering
+stays anyway, because a prompt whose shared part is one contiguous block at the top
+is a prompt whose shared part can be diffed, and because critical rules belong at
+the beginning or the end and never in the middle.
 
 ## What was decided, and why
 
@@ -59,12 +62,17 @@ nearly did, and that line is what my single retry depends on. Both chosen models
 support a structured output mode, so the shape is enforced by the layer under the
 prompt and not by asking politely in it.
 
-**The shared block carries more than the charge sheet.** `CLAUDE.md` says the charge
-sheet is the cached part, and that is still true, but the charge sheet alone is
-around 1,500 tokens and some providers will not cache a prefix that short. So
-everything identical inside a wave goes in front of it — the frame, the two verdict
-values, the simulation rule, the output contract. The saving is real either way and
-this way it clears the floor.
+**The shared block carries more than the charge sheet.** Everything identical inside
+a wave sits in one block in front of it — the frame, the two verdict values, the
+simulation rule, the output contract.
+
+The original reason was caching, and that reason has since gone. One model per agent
+means no model reads the same prefix twice in a deliberation, so there is nothing
+for a cache to hold. What the block is still worth is the thing that made it a file
+rather than a paragraph repeated seven times: four advocates that must be given
+identical instructions are given them from one place, and an edit cannot reach three
+of them and miss the fourth. That failure is silent, and it is the kind that shows
+up in step 7 as a character behaving oddly rather than as an error.
 
 **The profiles are copied from the package word for word.** The authoring notes are
 dropped — `Length check: under 300 words` and `Research basis` are instructions
