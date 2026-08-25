@@ -60,3 +60,30 @@ a paragraph.
 
 The two verdict values are not a field. The package fixes them as justified and
 not justified, so they are never supplied by a user and never varied by a case.
+
+## What makes one complete
+
+| Field | Rule |
+|---|---|
+| `accused` | present, and named in `act_alleged` |
+| `act_alleged` | at least ten words |
+| `background` | between 150 and 400 words |
+| `agreed_facts` | at least three items, each at least eight words, no two identical |
+| `question` | present, and a single question |
+
+The floors are there because a sheet that is too short is the failure I can
+actually prevent. An advocate handed three lines still has to build an argument,
+so it builds one out of invented facts, and the judges weigh it as though it
+rested on something.
+
+The ceiling is there because the charge sheet is sent as the cached part of the
+prompt and is read by all seven agents. Every word in it is paid for on every
+call, so length in this one field costs seven times what length costs anywhere
+else.
+
+The package states T-001's background at 200 to 300 words, and I have not adopted
+that as a rule. The same kind of line — `Length check: under 300 words` — sits at
+the foot of each judge profile in the package, which shows what those notes are:
+constraints the author of the dossier set for the dossier, not validation the
+application is asked to perform. My range is wider on both sides and T-001 passes
+inside it comfortably.
