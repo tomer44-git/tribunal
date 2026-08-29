@@ -76,9 +76,11 @@ test("prices come back per million and cost is worked out from them", async () =
     }),
   );
   const price = prices.get("a/model");
-  assert.equal(price?.inPerMillion, 0.1);
-  assert.equal(price?.outPerMillion, 0.4);
-  assert.equal(costOf(price, 1_000_000, 1_000_000), 0.5);
+  // Floating point: 0.0000001 * 1e6 is not exactly 0.1, and pretending otherwise
+  // would be a test that lies about arithmetic rather than about the code.
+  assert.ok(Math.abs(price!.inPerMillion - 0.1) < 1e-9);
+  assert.ok(Math.abs(price!.outPerMillion - 0.4) < 1e-9);
+  assert.ok(Math.abs(costOf(price, 1_000_000, 1_000_000)! - 0.5) < 1e-9);
   assert.equal(costOf(undefined, 10, 10), null);
   forgetPrices();
 });
