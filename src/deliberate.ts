@@ -26,6 +26,17 @@ import type { Price } from "./pricing.ts";
 
 export const RETRY_SEQ = 8;
 
+/** How long to wait before spending the spare.
+ *
+ *  The failure a seven-provider panel meets most often is a rate limit, and a
+ *  retry that goes out four seconds behind the first attempt meets the same limit
+ *  and is wasted. Measured in the spiral: two attempts seven seconds apart, both
+ *  refused by the same upstream. Waiting costs a run two seconds and gives the one
+ *  spare a chance of being worth spending. */
+export const RETRY_PAUSE_MS = 2000;
+
+const pause = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
 export type Deliberation = {
   status: "complete" | "failed";
   failedAtWave: "advocates" | "judges" | null;
@@ -64,6 +75,7 @@ export async function deliberate(
 
   if (firstBadAdvocate) {
     retryUsed = true;
+    await pause(deps.retryPauseMs ?? RETRY_PAUSE_MS);
     const retried = await runOneAdvocate(
       config,
       deliberationId,
@@ -127,6 +139,7 @@ export async function deliberate(
     );
     if (firstBadJudge) {
       retryUsed = true;
+      await pause(deps.retryPauseMs ?? RETRY_PAUSE_MS);
       const retried = await runOneJudge(
         config,
         deliberationId,

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { deliberate, RETRY_SEQ } from "../src/deliberate.ts";
+import { deliberate, RETRY_SEQ, RETRY_PAUSE_MS } from "../src/deliberate.ts";
 import { CallFailed, type CallResult } from "../src/openrouter.ts";
 import { MAX_CALLS_PER_DELIBERATION, type Config } from "../src/config.ts";
 import type { CallRow } from "../src/store.ts";
@@ -58,6 +58,7 @@ const panel = (script: (model: string, attempt: number) => "good" | "prose" | "t
         return outcome === "prose" ? prose(model) : good(model);
       },
       prices: async () => new Map(),
+      retryPauseMs: 0,
       writeCall: async (row: CallRow) => {
         rows.push(row);
         return null;
@@ -182,4 +183,12 @@ test("a run stops before the judges if the advocates alone reach the spend cap",
   assert.equal(run.status, "failed");
   assert.equal(run.failedAtWave, "advocates");
   assert.ok(!rows.some((r) => r.role === "judge"));
+});
+
+test("the spare waits before it is spent, so a rate limit has time to lift", async () => {
+  assert.ok(RETRY_PAUSE_MS >= 1000, "a retry that does not wait meets the same limit");
+  const { deps } = panel((model, attempt) => (model === "m/jon" && attempt === 1 ? "throw" : "good"));
+  const started = Date.now();
+  await deliberate(config, "run", sheet, { ...deps, retryPauseMs: 40 });
+  assert.ok(Date.now() - started >= 40, "the pause was actually taken");
 });

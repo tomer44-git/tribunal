@@ -34,6 +34,8 @@ export type Deps = {
   call: (options: { model: string; prompt: string; schema: unknown; schemaName: string }) => Promise<CallResult>;
   prices: () => Promise<Map<string, Price>>;
   writeCall: (row: CallRow) => Promise<unknown>;
+  /** Tests set this to zero so that a suite is not held up by a real pause. */
+  retryPauseMs?: number;
 };
 
 export type AdvocateResult = {
