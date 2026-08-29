@@ -68,6 +68,40 @@ test("a body that is not JSON is a failure", async () => {
   );
 });
 
+test("the billed cost and its split come back on the result", async () => {
+  const result = await callModel(config, {
+    model: "m",
+    prompt: "p",
+    schema: {},
+    schemaName: "s",
+    fetchImpl: replyWith(200, {
+      model: "m",
+      choices: [{ message: { content: "{}" } }],
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 10,
+        cost: 0.5,
+        cost_details: { upstream_inference_prompt_cost: 0.4, upstream_inference_completions_cost: 0.1 },
+      },
+    }),
+  });
+  assert.equal(result.costUsd, 0.5);
+  assert.equal(result.costIn, 0.4);
+  assert.equal(result.costOut, 0.1);
+});
+
+test("a provider that reports no cost leaves the fields empty rather than zero", async () => {
+  const result = await callModel(config, {
+    model: "m",
+    prompt: "p",
+    schema: {},
+    schemaName: "s",
+    fetchImpl: replyWith(200, { model: "m", choices: [{ message: { content: "{}" } }], usage: {} }),
+  });
+  assert.equal(result.costUsd, null);
+  assert.equal(result.costIn, null);
+});
+
 test("prices come back per million and cost is worked out from them", async () => {
   forgetPrices();
   const prices = await loadPrices(

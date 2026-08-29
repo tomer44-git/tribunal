@@ -33,6 +33,13 @@ export type CallResult = {
   content: string | null;
   tokensIn: number;
   tokensOut: number;
+  /** What the call actually cost, as the gateway reports it, and how that cost
+   *  splits between input and output. This is the billed figure and not a price
+   *  list, which matters: the published price of a model is neither what every
+   *  provider serving it charges nor what a cached prompt is charged. */
+  costUsd: number | null;
+  costIn: number | null;
+  costOut: number | null;
   latencyMs: number;
   raw: string;
 };
@@ -99,7 +106,15 @@ export async function callModel(
   let body: {
     model?: string;
     choices?: { message?: { content?: string } }[];
-    usage?: { prompt_tokens?: number; completion_tokens?: number };
+    usage?: {
+      prompt_tokens?: number;
+      completion_tokens?: number;
+      cost?: number;
+      cost_details?: {
+        upstream_inference_prompt_cost?: number;
+        upstream_inference_completions_cost?: number;
+      };
+    };
     error?: { message?: string };
   };
   try {
@@ -110,11 +125,18 @@ export async function callModel(
 
   if (body.error) throw new CallFailed(body.error.message ?? "the provider reported an error", latencyMs, text);
 
+  const details = body.usage?.cost_details;
+  const number = (value: unknown): number | null =>
+    typeof value === "number" && Number.isFinite(value) ? value : null;
+
   return {
     modelAnswered: body.model ?? null,
     content: body.choices?.[0]?.message?.content ?? null,
     tokensIn: body.usage?.prompt_tokens ?? 0,
     tokensOut: body.usage?.completion_tokens ?? 0,
+    costUsd: number(body.usage?.cost),
+    costIn: number(details?.upstream_inference_prompt_cost),
+    costOut: number(details?.upstream_inference_completions_cost),
     latencyMs,
     raw: text,
   };

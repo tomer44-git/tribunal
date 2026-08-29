@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { runAdvocateWave, SEQ_OF_ADVOCATE, type Deps } from "../src/wave.ts";
+import { runAdvocateWave, SEQ_OF_ADVOCATE, priced, type Deps } from "../src/wave.ts";
 import { CallFailed, type CallResult } from "../src/openrouter.ts";
 import type { Config } from "../src/config.ts";
 import type { CallRow } from "../src/store.ts";
@@ -30,6 +30,9 @@ const answer = (position: string, reasons = ["one reason", "two reason"]): CallR
   content: JSON.stringify({ position, reasons }),
   tokensIn: 1000,
   tokensOut: 100,
+  costUsd: null,
+  costIn: null,
+  costOut: null,
   latencyMs: 7,
   raw: "{}",
 });
@@ -117,7 +120,41 @@ test("a failed call is still a row, and the other three are unaffected", async (
   assert.equal(results.filter((r) => r.status === "complete").length, 3);
 });
 
-test("tokens are kept apart and the cost is worked out from the model that answered", async () => {
+test("what was billed decides the rate, not the price list", () => {
+  // llama-3.3-70b is listed at $0.71 each way and was billed at $0.25 in and
+  // $0.75 out on the first real wave. The row has to say what happened.
+  const list = new Map([["m/answered", { inPerMillion: 0.71, outPerMillion: 0.71 }]]);
+  const billed = priced(list, {
+    modelAnswered: "m/answered",
+    tokensIn: 1191,
+    tokensOut: 58,
+    costUsd: 0.00034125,
+    costIn: 0.00029775,
+    costOut: 4.35e-5,
+  });
+  assert.ok(Math.abs(billed.price_in_per_m! - 0.25) < 1e-9);
+  assert.ok(Math.abs(billed.price_out_per_m! - 0.75) < 1e-9);
+  assert.equal(billed.cost_usd, 0.00034125);
+  // And it reconciles: tokens times rate is the cost, by construction.
+  const rebuilt = (1191 * billed.price_in_per_m! + 58 * billed.price_out_per_m!) / 1e6;
+  assert.ok(Math.abs(rebuilt - billed.cost_usd!) < 1e-12);
+});
+
+test("the price list is used only when nothing was reported", () => {
+  const list = new Map([["m/answered", { inPerMillion: 2, outPerMillion: 20 }]]);
+  const fallback = priced(list, {
+    modelAnswered: "m/answered",
+    tokensIn: 1_000_000,
+    tokensOut: 1_000_000,
+    costUsd: null,
+    costIn: null,
+    costOut: null,
+  });
+  assert.equal(fallback.price_in_per_m, 2);
+  assert.equal(fallback.cost_usd, 22);
+});
+
+test("tokens are kept apart and the cost falls back to the list when nothing is billed", async () => {
   const { deps: d, rows } = deps(async () => answer("justified"));
   await runAdvocateWave(config, "run-1", sheet, d);
   for (const row of rows) {

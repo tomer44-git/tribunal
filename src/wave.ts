@@ -38,12 +38,36 @@ export type AdvocateResult = {
   row: CallRow;
 };
 
-function priced(
+/**
+ * What the call cost, and at what rate.
+ *
+ * The published price of a model is not reliably what a call is charged. Two
+ * things break it, and the first real advocate wave showed both. A gateway routes
+ * to whichever provider is serving the model, and that provider has its own
+ * prices: llama-3.3-70b is listed at $0.71 per million each way and was billed at
+ * $0.25 in and $0.75 out. And a provider may discount input it has seen recently,
+ * which took gpt-5-nano's effective input rate to a seventh of its list price.
+ *
+ * So the rates are worked out from what was actually billed, which always
+ * reconciles: cost equals tokens times rate, by construction. The price list is
+ * kept only for a provider that reports no cost at all.
+ */
+export function priced(
   prices: Map<string, Price>,
-  modelAnswered: string | null,
-  tokensIn: number,
-  tokensOut: number,
+  result: Pick<CallResult, "modelAnswered" | "tokensIn" | "tokensOut" | "costUsd" | "costIn" | "costOut">,
 ): Pick<CallRow, "price_in_per_m" | "price_out_per_m" | "cost_usd"> {
+  const { modelAnswered, tokensIn, tokensOut, costUsd, costIn, costOut } = result;
+
+  if (costUsd !== null) {
+    const rate = (cost: number | null, tokens: number): number | null =>
+      cost === null || tokens <= 0 ? null : (cost / tokens) * 1_000_000;
+    return {
+      price_in_per_m: rate(costIn, tokensIn),
+      price_out_per_m: rate(costOut, tokensOut),
+      cost_usd: costUsd,
+    };
+  }
+
   const price = modelAnswered ? prices.get(modelAnswered) : undefined;
   return {
     price_in_per_m: price?.inPerMillion ?? null,
@@ -117,7 +141,7 @@ async function runOneAdvocate(
     reasons: parsed.ok ? parsed.value.reasons : null,
     tokens_in: result.tokensIn,
     tokens_out: result.tokensOut,
-    ...priced(prices, result.modelAnswered, result.tokensIn, result.tokensOut),
+    ...priced(prices, result),
     latency_ms: result.latencyMs,
     raw_response: result.raw,
     error: parsed.ok ? null : parsed.why,
