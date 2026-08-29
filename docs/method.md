@@ -151,8 +151,18 @@ panel has failed, not succeeded. Treat unanimity as a signal to look at the
 prompts.* And Module 9: *a careless prompt edit is a real fault.*
 
 **Token economics, made concrete.** Each run is roughly seventeen thousand
-tokens, so ten tuning runs are a hundred and seventy thousand. Tuning happens on
-cheap models, and the capable ones come in only once the wording has settled.
+tokens, so ten tuning runs are a hundred and seventy thousand.
+
+**I said tuning would happen on cheap models and the capable ones would come in
+only once the wording had settled. I have changed my mind, and this is where it is
+written down.** That plan was made when the judges were one capable model and a
+run was the largest line in the bill. With seven models chosen for what they are
+rather than for what they cost, a measured run is three and a half cents, and
+tuning on substitutes would save three cents while producing readings that cannot
+be compared to the run Mikael will see. Format reliability differs, answer length
+differs, and how a judge reasons — which is the entire thing being read — differs
+most of all. Ten runs on the real seven are thirty-four cents against a three
+dollar ceiling. The advice was right about the money and the money moved.
 
 **Stop when** the three judges sound genuinely unlike one another. Repeated
 unanimity means the panel collapsed, whatever the verdicts say.
