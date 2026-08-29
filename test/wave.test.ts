@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { runAdvocateWave, SEQ_OF_ADVOCATE, priced, type Deps } from "../src/wave.ts";
+import { runAdvocateWave, runJudgeWave, SEQ_OF_ADVOCATE, priced, type Deps } from "../src/wave.ts";
 import { CallFailed, type CallResult } from "../src/openrouter.ts";
 import type { Config } from "../src/config.ts";
 import type { CallRow } from "../src/store.ts";
@@ -184,4 +184,125 @@ test("the four go out together rather than one after another", async () => {
   });
   await runAdvocateWave(config, "run-1", sheet, d);
   assert.equal(peak, 4);
+});
+
+// --- the judge wave -------------------------------------------------------
+
+const submissions = [
+  { seat: "defence" as const, position: "not justified" as const, reasons: ["a", "b"] },
+  { seat: "defence" as const, position: "justified" as const, reasons: ["c", "d"] },
+  { seat: "prosecution" as const, position: "not justified" as const, reasons: ["e", "f"] },
+  { seat: "prosecution" as const, position: "not justified" as const, reasons: ["g", "h"] },
+];
+
+const opinion = (verdict: string): CallResult => ({
+  modelAnswered: "m/answered",
+  content: JSON.stringify({
+    verdict,
+    reasons: ["one reason", "two reason"],
+    controlling_ground: "the test that carried it",
+  }),
+  tokensIn: 2000,
+  tokensOut: 200,
+  costUsd: null,
+  costIn: null,
+  costOut: null,
+  latencyMs: 9,
+  raw: "{}",
+});
+
+test("three judges make three calls and write three rows", async () => {
+  const { deps: d, rows } = deps(async () => opinion("justified"));
+  const results = await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.equal(results.length, 3);
+  assert.deepEqual(rows.map((r) => r.seq).sort(), [5, 6, 7]);
+  assert.ok(rows.every((r) => r.role === "judge"));
+});
+
+test("a judge row carries no position and no seat", async () => {
+  const { deps: d, rows } = deps(async () => opinion("justified"));
+  await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.ok(rows.every((r) => r.position === null && r.seat === null));
+});
+
+test("each judge is asked for on its own model", async () => {
+  const asked: string[] = [];
+  const { deps: d } = deps(async ({ model }) => {
+    asked.push(model);
+    return opinion("justified");
+  });
+  await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.deepEqual(asked.sort(), ["m/barak", "m/elon", "m/shamgar"]);
+});
+
+test("three judges may disagree, and nothing reconciles them", async () => {
+  const { deps: d } = deps(async ({ model }) =>
+    opinion(model === "m/barak" ? "justified" : "not justified"),
+  );
+  const results = await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.deepEqual(
+    results.map((r) => r.opinion?.verdict).sort(),
+    ["justified", "not justified", "not justified"],
+  );
+});
+
+test("a judge that answers in prose leaves no verdict behind", async () => {
+  const { deps: d, rows } = deps(async ({ model }) =>
+    model === "m/elon"
+      ? { ...opinion("justified"), content: "On balance I find the killing justified." }
+      : opinion("justified"),
+  );
+  const results = await runJudgeWave(config, "run-1", sheet, submissions, d);
+  const elon = results.find((r) => r.agent === "elon")!;
+  assert.equal(elon.status, "malformed");
+  assert.equal(elon.row.verdict, null);
+  assert.equal(elon.row.controlling_ground, null);
+  assert.ok(elon.row.raw_response !== null);
+});
+
+test("a judge without its controlling ground is malformed, not complete", async () => {
+  const { deps: d } = deps(async () => ({
+    ...opinion("justified"),
+    content: JSON.stringify({ verdict: "justified", reasons: ["one", "two"] }),
+  }));
+  const results = await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.ok(results.every((r) => r.status === "malformed" && r.row.verdict === null));
+});
+
+test("one judge failing leaves the other two standing", async () => {
+  const { deps: d, rows } = deps(async ({ model }) => {
+    if (model === "m/shamgar") throw new CallFailed("the provider answered 503", 4, "");
+    return opinion("not justified");
+  });
+  const results = await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.equal(rows.length, 3);
+  assert.equal(results.filter((r) => r.status === "complete").length, 2);
+  const shamgar = results.find((r) => r.agent === "shamgar")!;
+  assert.equal(shamgar.row.verdict, null);
+  assert.equal(shamgar.row.error, "the provider answered 503");
+});
+
+test("the three go out together", async () => {
+  let inFlight = 0;
+  let peak = 0;
+  const { deps: d } = deps(async () => {
+    inFlight += 1;
+    peak = Math.max(peak, inFlight);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    inFlight -= 1;
+    return opinion("justified");
+  });
+  await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.equal(peak, 3);
+});
+
+test("the seven panel calls take seven distinct sequence numbers, and eight is left free", async () => {
+  const { deps: d, rows } = deps(async ({ model }) =>
+    model.includes("barak") || model.includes("elon") || model.includes("shamgar")
+      ? opinion("justified")
+      : answer("justified"),
+  );
+  await runAdvocateWave(config, "run-1", sheet, d);
+  await runJudgeWave(config, "run-1", sheet, submissions, d);
+  assert.deepEqual(rows.map((r) => r.seq).sort((a, b) => a - b), [1, 2, 3, 4, 5, 6, 7]);
 });

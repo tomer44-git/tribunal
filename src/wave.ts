@@ -9,10 +9,10 @@
 // fixed order, five to seven are the judges, and eight is the one spare. Seven
 // panel calls and one retry is the whole cap, and it is legible in the log.
 
-import { ADVOCATES, SEAT_OF, type Config } from "./config.ts";
+import { ADVOCATES, JUDGES, SEAT_OF, type Config } from "./config.ts";
 import type { ChargeSheet } from "./charge-sheet.ts";
-import { advocatePrompt, type Submission } from "./prompt.ts";
-import { parseAdvocate, ADVOCATE_SCHEMA } from "./opinion.ts";
+import { advocatePrompt, judgePrompt, type Submission } from "./prompt.ts";
+import { parseAdvocate, parseJudge, ADVOCATE_SCHEMA, JUDGE_SCHEMA } from "./opinion.ts";
 import { CallFailed, type CallResult } from "./openrouter.ts";
 import { costOf, type Price } from "./pricing.ts";
 import type { CallRow } from "./store.ts";
@@ -22,6 +22,12 @@ export const SEQ_OF_ADVOCATE: Record<(typeof ADVOCATES)[number], number> = {
   tyrion: 2,
   daenerys: 3,
   grey_worm: 4,
+};
+
+export const SEQ_OF_JUDGE: Record<(typeof JUDGES)[number], number> = {
+  barak: 5,
+  elon: 6,
+  shamgar: 7,
 };
 
 export type Deps = {
@@ -167,5 +173,113 @@ export async function runAdvocateWave(
   const prices = await deps.prices();
   return Promise.all(
     ADVOCATES.map((agent) => runOneAdvocate(config, deliberationId, sheet, agent, deps, prices)),
+  );
+}
+
+export type JudgeResult = {
+  agent: (typeof JUDGES)[number];
+  status: "complete" | "malformed" | "failed";
+  opinion: { verdict: string; reasons: string[]; controlling_ground: string } | null;
+  row: CallRow;
+};
+
+async function runOneJudge(
+  config: Config,
+  deliberationId: string,
+  sheet: ChargeSheet,
+  submissions: Submission[],
+  agent: (typeof JUDGES)[number],
+  deps: Deps,
+  prices: Map<string, Price>,
+): Promise<JudgeResult> {
+  const model = config.models[agent];
+  const base = {
+    deliberation_id: deliberationId,
+    seq: SEQ_OF_JUDGE[agent],
+    role: "judge" as const,
+    agent,
+    // A judge has no seat. It is not seated on a side and the column says so.
+    seat: null,
+    is_retry: false,
+    model_requested: model,
+    position: null,
+  };
+
+  let result: CallResult;
+  try {
+    result = await deps.call({
+      model,
+      prompt: judgePrompt(agent, sheet, submissions),
+      schema: JUDGE_SCHEMA,
+      schemaName: "judge_opinion",
+    });
+  } catch (error) {
+    const failure = error instanceof CallFailed ? error : null;
+    const row: CallRow = {
+      ...base,
+      status: "failed",
+      model_answered: null,
+      verdict: null,
+      reasons: null,
+      controlling_ground: null,
+      tokens_in: 0,
+      tokens_out: 0,
+      price_in_per_m: null,
+      price_out_per_m: null,
+      cost_usd: null,
+      latency_ms: failure?.latencyMs ?? null,
+      raw_response: failure?.raw || null,
+      error: error instanceof Error ? error.message : "the call did not complete",
+    };
+    await deps.writeCall(row);
+    return { agent, status: "failed", opinion: null, row };
+  }
+
+  const parsed = result.content
+    ? parseJudge(result.content)
+    : ({ ok: false, why: "the answer had no content" } as const);
+
+  const row: CallRow = {
+    ...base,
+    status: parsed.ok ? "complete" : "malformed",
+    model_answered: result.modelAnswered,
+    verdict: parsed.ok ? parsed.value.verdict : null,
+    reasons: parsed.ok ? parsed.value.reasons : null,
+    controlling_ground: parsed.ok ? parsed.value.controlling_ground : null,
+    tokens_in: result.tokensIn,
+    tokens_out: result.tokensOut,
+    ...priced(prices, result),
+    latency_ms: result.latencyMs,
+    raw_response: result.raw,
+    error: parsed.ok ? null : parsed.why,
+  };
+
+  await deps.writeCall(row);
+  return {
+    agent,
+    status: parsed.ok ? "complete" : "malformed",
+    opinion: parsed.ok ? parsed.value : null,
+    row,
+  };
+}
+
+/**
+ * The three judges, run together.
+ *
+ * They wait for the advocates and not for each other, and they never see one
+ * another's opinions. Three opinions go out as three: nothing here compares them,
+ * ranks them or reconciles them, and a judge that fails leaves the other two
+ * standing.
+ */
+export async function runJudgeWave(
+  config: Config,
+  deliberationId: string,
+  sheet: ChargeSheet,
+  submissions: Submission[],
+  deps: Deps,
+): Promise<JudgeResult[]> {
+  const prices = await deps.prices();
+  return Promise.all(
+    JUDGES.map((agent) => runOneJudge(config, deliberationId, sheet, submissions, agent, deps, prices)),
   );
 }
