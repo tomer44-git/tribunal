@@ -1,0 +1,16 @@
+# Build settings live here rather than only in the Netlify interface, so that a
+# change to them is a diff someone can read. No values belong in this file — it is
+# committed, and every secret this project holds is set in the Netlify UI or in a
+# local .env that git ignores.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# The functions are reached at /api/… so that the page is not written against a
+# platform's directory layout.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

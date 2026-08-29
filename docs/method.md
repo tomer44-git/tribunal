@@ -151,8 +151,18 @@ panel has failed, not succeeded. Treat unanimity as a signal to look at the
 prompts.* And Module 9: *a careless prompt edit is a real fault.*
 
 **Token economics, made concrete.** Each run is roughly seventeen thousand
-tokens, so ten tuning runs are a hundred and seventy thousand. Tuning happens on
-cheap models, and the capable ones come in only once the wording has settled.
+tokens, so ten tuning runs are a hundred and seventy thousand.
+
+**I said tuning would happen on cheap models and the capable ones would come in
+only once the wording had settled. I have changed my mind, and this is where it is
+written down.** That plan was made when the judges were one capable model and a
+run was the largest line in the bill. With seven models chosen for what they are
+rather than for what they cost, a measured run is three and a half cents, and
+tuning on substitutes would save three cents while producing readings that cannot
+be compared to the run Mikael will see. Format reliability differs, answer length
+differs, and how a judge reasons — which is the entire thing being read — differs
+most of all. Ten runs on the real seven are thirty-four cents against a three
+dollar ceiling. The advice was right about the money and the money moved.
 
 **Stop when** the three judges sound genuinely unlike one another. Repeated
 unanimity means the panel collapsed, whatever the verdicts say.
@@ -161,28 +171,50 @@ unanimity means the panel collapsed, whatever the verdicts say.
 
 ---
 
-## Step 8 — The progression to several models
+## Step 8 — The progression to seven models
 
-Advocates on a cheap model, judges on a capable one — introduced as its own step
-so that the progression is visible in the commits, which is an explicit
-requirement.
+One model for all seven agents first, then a separate model for each of the seven.
+It is its own step so that the progression is visible in the commits, which is an
+explicit requirement.
 
-**Emphasis.** Module 9: *the biggest lever is the choice of model.* And the
-reason it is a lever here rather than a preference: building one side of an
-argument is not the same work as weighing four of them.
+**This is a change of mind and it is written down rather than smoothed over.** This
+step used to read as two models — a cheap one for the four representatives, a
+capable one for the three judges — and `docs/02-cognified-economics.md` argues for
+exactly that split. The essay stands as it was submitted. Mikael has since said
+that several models means one model per agent, so seven is the end state and the
+two-way split becomes a stage on the way rather than the destination.
+
+**Emphasis.** Module 9: *the biggest lever is the choice of model.* The lever is
+the same one. There are simply seven of them now.
+
+**What the change costs.** Prompt caching stops paying. A cache holds a prefix for
+one model, and when no two agents share a model each one sees the identical charge
+sheet exactly once in a deliberation — a write with no read behind it, and on some
+providers a write costs more than plain input. `CLAUDE.md` is corrected to say so.
+The shared blocks in `prompts/` stay, for the other reason they were written: one
+source that cannot drift into seven near-copies.
+
+**What the change buys.** Three judges on three different models are three
+independent readings. On one model they share the same dispositions, and their
+agreement proves less than it appears to. Unanimity is the failure this panel is
+most at risk of, and this is the one change that works against it without touching
+a prompt.
 
 **Token economics, and the strongest evidence in the project.** The essays claim
 roughly seventeen thousand tokens per case and about six seconds against
-twenty-one — figures taken from the course. By this point the log has measured
-them.
+twenty-one — figures taken from the course. By this point the log has measured them
+per agent and per model, with input and output counted separately, so that the
+price of each can be shown rather than asserted.
 
     what I claimed  →  what I measured  →  what the difference taught
 
 A document that sets a claim against a measurement proves that cost here is
 architecture rather than a quotation.
 
-**Produces** → `docs/token-economics.md` — cost per deliberation before and
-after, and why each model was chosen
+**Produces** → `docs/token-economics.md` — for every model: price per million in
+and out, tokens in and out actually spent, cost, and time; then one deliberation on
+a single model set against the same deliberation on seven, and the reason each
+model was chosen
 
 ---
 

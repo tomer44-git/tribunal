@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tribunal</title>
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Tribunal</h1>
+      <p class="lede">
+        A charge sheet is put to four representatives and three judges. The
+        representatives argue it, the judges decide it, and three reasoned verdicts
+        come back. They are shown side by side and are never combined into one.
+      </p>
+
+      <section id="submit">
+        <h2>The charge sheet</h2>
+        <form id="sheet">
+          <div class="row">
+            <button type="button" class="plain" id="load">Load case T-001</button>
+            <span class="quiet small">The canonical case, from the information package.</span>
+          </div>
+          <label>Accused <input name="accused" required /></label>
+          <label>Deceased <span class="quiet">— optional</span><input name="deceased" /></label>
+          <label>Act alleged <textarea name="act_alleged" rows="3"></textarea></label>
+          <label>Background <span class="quiet">— 150 to 400 words</span><textarea name="background" rows="8"></textarea></label>
+          <label>Agreed facts <span class="quiet">— one per line, at least three</span><textarea name="agreed_facts" rows="7"></textarea></label>
+          <label>Question for judgment <textarea name="question" rows="3"></textarea></label>
+          <div class="row">
+            <button type="submit" id="go">Put it to the panel</button>
+            <span class="quiet small" id="note"></span>
+          </div>
+        </form>
+        <div id="problems"></div>
+      </section>
+
+      <section id="result" hidden></section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
