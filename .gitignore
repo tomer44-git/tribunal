@@ -6,3 +6,7 @@ node_modules/
 dist/
 src/prompts.generated.ts
 .claude/
+
+# Local Netlify folder
+.netlify
+deno.lock
