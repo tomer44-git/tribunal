@@ -13,15 +13,23 @@ import { loadPrices } from "../src/pricing.ts";
 import { deliberate } from "../src/deliberate.ts";
 import type { ChargeSheet } from "../src/charge-sheet.ts";
 
-const config = readConfig();
+// An optional argument puts every agent on one model, which is the first rung of
+// the progression this step exists to measure:
+//
+//   node --env-file=.env scripts/run.ts anthropic/claude-sonnet-5
+const only = process.argv[2];
+const base = readConfig();
+const config = only
+  ? { ...base, models: Object.fromEntries(Object.keys(base.models).map((a) => [a, only])) as typeof base.models }
+  : base;
 const sheet = JSON.parse(
   readFileSync(new URL("../test/fixtures/t001.json", import.meta.url), "utf8"),
 ) as ChargeSheet;
 
-const reference = `TUNE-${Date.now().toString(36).toUpperCase()}`;
+const reference = `${only ? "ONE" : "TUNE"}-${Date.now().toString(36).toUpperCase()}`;
 const storedCase = await insertCase(config, sheet, reference);
 const run = await insertDeliberation(config, storedCase.id);
-console.log(`run ${reference}\n`);
+console.log(`run ${reference}${only ? `  ·  every agent on ${only}` : "  ·  seven models"}\n`);
 
 const started = Date.now();
 const outcome = await deliberate(config, run.id, sheet, {
