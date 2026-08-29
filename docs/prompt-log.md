@@ -140,3 +140,56 @@ seven providers that can be rate-limited — arriving on schedule.
 
 The cost of it was small, which is the failure rule working: a run that dies in the
 advocate wave costs about a tenth of a cent because the judges are never called.
+
+---
+
+## Round 3 — the instrument replaced, and the spare given time
+
+Two changes, neither of them a prompt. Daenerys moved from
+`mistral-small-3.2-24b` to `deepseek/deepseek-v4-flash`, because a model that
+refused three runs out of six is a broken instrument and not a variable. And the
+spare now waits two seconds before it is spent, because the log showed both
+attempts inside seven seconds of each other, meeting the same upstream limit twice.
+
+| Run | Representatives | Judges |
+|---|---|---|
+| 7 | justified, justified, not justified, not justified | not justified · **justified** · not justified |
+| 8 | **not justified**, justified, not justified, not justified | not justified · **justified** · not justified |
+| 9 | **not justified**, justified, not justified, not justified | not justified · not justified · not justified |
+
+Three runs, three completions, no refusals. The spare was never needed.
+
+Run 7 is worth marking: every representative held its seat, and the judges still
+split. A panel that only disagrees when a representative crosses would be a panel
+disagreeing about its own inputs.
+
+## Where this stopped
+
+Seven completed deliberations in all.
+
+| Judge | justified | not justified |
+|---|---|---|
+| Barak | 0 | 7 |
+| Elon | **5** | 2 |
+| Shamgar | 0 | 7 |
+
+**Five runs split two to one. Two were unanimous.** `CLAUDE.md` sets the failure
+condition as all three agreeing *every* time, and they do not.
+
+What matters more is that the grounds hold their shape whatever the verdict:
+
+- **Barak** names imminence and least harmful means, every run without exception,
+  and reasons through a structure of tests.
+- **Elon** reaches the halakhic doctrine of the rodef, every run — including both
+  runs where he came down against the killing, where he applied the same doctrine
+  and found it unmet.
+- **Shamgar** never reaches the moral question at all. He refuses on authority: a
+  private person cannot execute a sovereign, whatever she has done.
+
+Two judges agreeing on a verdict for visibly different reasons, and the third
+dissenting on a third, is what this panel was built to produce. **The stop
+condition is met: they sound unlike one another across runs and not once.**
+
+One correction to a prompt, in three rounds. It was the right one and it was mine
+to make, because the fault was in a paragraph I had written and not in anything
+Mikael specified.
