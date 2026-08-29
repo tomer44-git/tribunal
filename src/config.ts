@@ -51,9 +51,11 @@ export type Config = {
 export const MAX_CALLS_PER_DELIBERATION = 8;
 
 export class MissingConfig extends Error {
-  constructor(readonly names: string[]) {
+  readonly names: string[];
+  constructor(names: string[]) {
     super(`missing configuration: ${names.join(", ")}`);
     this.name = "MissingConfig";
+    this.names = names;
   }
 }
 

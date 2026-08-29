@@ -11,13 +11,13 @@ import type { Config } from "./config.ts";
 export type StoredCase = ChargeSheet & { id: string; reference: string; created_at: string };
 
 export class StoreError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-    readonly detail: string,
-  ) {
+  readonly status: number;
+  readonly detail: string;
+  constructor(message: string, status: number, detail: string) {
     super(message);
     this.name = "StoreError";
+    this.status = status;
+    this.detail = detail;
   }
 }
 
