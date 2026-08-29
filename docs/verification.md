@@ -179,3 +179,41 @@ Recorded plainly rather than left to be discovered.
 None of these can be closed without either `netlify dev` or a deployment, and the
 deployment waits for step 9. They are the gate: no merge until a real run goes
 through the functions end to end.
+
+---
+
+## The gate, closed
+
+30 August, under `netlify dev`, against the real database and the real seven
+models. All four functions loaded and `status` answered `{"status":"ok","config":
+"complete"}`, which is the first proof that the environment is whole.
+
+One charge sheet was then put to the panel **from the page, in a browser**, and the
+whole path ran: `cases` stored it as `C-A0FDF4`, `runs` opened the deliberation,
+`deliberate-background` answered 202 and ran the panel behind the request, and the
+page polled `runs` once a second and drew what the server had written.
+
+| Check | Result |
+|---|---|
+| The functions answer a real request | **pass** |
+| A charge sheet posted from the page is stored | **pass** |
+| The background function runs the panel and closes the run | **pass** — `status: complete`, `retry_used: false` |
+| The page shows the run progressing, then the result | **pass** — cards landed while the panel sat |
+| Seven calls, no retry, no failure | **pass** |
+| Four arguments shown by name and seat | **pass** — Jon Snow · defence seat, and so on |
+| Three opinions side by side, each with its controlling ground | **pass** |
+| The economics table and totals appear under them | **pass** |
+
+    7 calls · 12,760 tokens in · 3,867 out · $0.033941 · 21.4 seconds
+
+The three judges came down the same way this time and reached it three different
+ways: Barak on least harmful means, Elon on the necessity and rodef standard,
+Shamgar on the absence of any lawful authority to kill a sovereign. Unanimity in one
+run out of eight is not the failure `CLAUDE.md` describes; agreement for one reason
+would have been.
+
+**Every gap listed above is closed.** The orchestrator, the retry rule and the
+failure rules had already run against real providers nine times during step 7,
+including one real `429` that spent the spare and stopped the run before the judge
+wave. What was missing was the path through the functions and the page, and that
+has now run end to end.
