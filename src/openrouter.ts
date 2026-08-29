@@ -13,6 +13,15 @@ const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
  *  failure we caused ourselves. */
 const MAX_TOKENS = 2000;
 
+/** Hidden reasoning is billed as output, and output is most of what a deliberation
+ *  costs. The first real call proved the sharper problem: a reasoning model spent
+ *  all 1,984 of its output tokens thinking and returned no answer at all, which
+ *  this system is obliged to record as malformed. The panel's product is the
+ *  argument and the verdict, both in a fixed shape. If an agent ever needs to
+ *  think at length, that is turned on for that agent on purpose and paid for
+ *  knowingly. */
+const REASONING = { enabled: false } as const;
+
 export type CallResult = {
   /** The model named in the response. A gateway can route elsewhere, and a log of
    *  what was asked describes a run that did not happen. */
@@ -67,6 +76,7 @@ export async function callModel(
           type: "json_schema",
           json_schema: { name: options.schemaName, strict: true, schema: options.schema },
         },
+        reasoning: REASONING,
         usage: { include: true },
       }),
     });

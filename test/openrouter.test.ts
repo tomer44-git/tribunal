@@ -84,3 +84,20 @@ test("prices come back per million and cost is worked out from them", async () =
   assert.equal(costOf(undefined, 10, 10), null);
   forgetPrices();
 });
+
+test("reasoning is asked to stay off, and the shape is asked for under the prompt", async () => {
+  let sent: Record<string, unknown> = {};
+  const capture = (async (_url: string, init: RequestInit) => {
+    sent = JSON.parse(String(init.body));
+    return new Response(
+      JSON.stringify({ model: "m", choices: [{ message: { content: "{}" } }], usage: {} }),
+      { status: 200 },
+    );
+  }) as unknown as typeof fetch;
+
+  await callModel(config, { model: "m", prompt: "p", schema: { type: "object" }, schemaName: "s", fetchImpl: capture });
+
+  assert.deepEqual(sent["reasoning"], { enabled: false });
+  assert.equal((sent["response_format"] as { type: string }).type, "json_schema");
+  assert.equal(typeof sent["max_tokens"], "number");
+});
