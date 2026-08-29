@@ -86,3 +86,10 @@ th, td { text-align: right; padding: .35rem .6rem; border-bottom: 1px solid var(
 th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
 tfoot td { font-weight: 600; border-bottom: none; }
 .tag { font-size: .7rem; border: 1px solid var(--rule); border-radius: 2px; padding: 0 .3rem; color: var(--quiet); }
+
+.legend { margin: 1rem 0 0; font-size: .82rem; }
+.legend dt {
+  font-weight: 600; font-variant-numeric: tabular-nums;
+  margin-top: .6rem;
+}
+.legend dd { margin: .1rem 0 0; color: var(--quiet); max-width: 46rem; }
