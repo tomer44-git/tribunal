@@ -217,3 +217,54 @@ failure rules had already run against real providers nine times during step 7,
 including one real `429` that spent the spare and stopped the run before the judge
 wave. What was missing was the path through the functions and the page, and that
 has now run end to end.
+
+
+---
+
+## The last two gaps, closed in production
+
+29 August, on the deployed site. One judge was pointed at a model that does not
+exist, so that the failure path would run for real rather than in a test. The run
+then failed in a way nobody arranged, which made it a better test than the one
+intended.
+
+| Landed | Seq | Agent | Status | Retry | Call |
+|---|---|---|---|---|---|
+| +0.0 s | 4 | Grey Worm | complete | | 2.6 s |
+| +0.7 s | 1 | Jon Snow | complete | | 3.3 s |
+| +1.0 s | 2 | Tyrion | complete | | 3.6 s |
+| +65.4 s | 3 | Daenerys | **malformed** | | **68.0 s** |
+| +70.8 s | 8 | Daenerys | complete | **yes** | 3.3 s |
+| +70.9 s | 7 | Shamgar | **failed** | | 0.025 s |
+| +77.6 s | 5 | Barak | complete | | 6.8 s |
+| +79.6 s | 6 | Elon | complete | | 8.8 s |
+
+| Check | Result |
+|---|---|
+| A judge that fails leaves the other two opinions standing | **pass** |
+| The failed seat shows the failure in its place | **pass** — *the provider answered 400* |
+| The run is shown but not presented as a finished result | **pass** — the banner appeared |
+| The spare is spent in production | **pass** — Daenerys was rescued by it |
+| A spare spent on an advocate is not available to a judge | **pass** — Shamgar failed in 25 ms with no second ask |
+| Eight calls, never nine | **pass** — a run with both a retry and a failure stopped at eight |
+| A failed row carries no outcome | **pass** — zero tokens, no verdict |
+| A retry replaces its seat on screen while both calls stay in the bill | **pass** — one Daenerys card, eight calls in the total |
+
+The environment variable was put back afterwards.
+
+### What it also found
+
+**One advocate call took 68 seconds and came back malformed.** A wave finishes when
+its slowest member finishes, so three agents that had answered in under four
+seconds waited more than a minute for the fourth, and the run took 83 seconds
+against a measured average of 18.
+
+Nothing in this project sets a deadline on a model call; it waits for the provider.
+Inside a fifteen-minute background function that is survivable, and the page keeps
+saying the panel is sitting, which is true. But a user watching it has no way to
+tell a slow provider from a broken one, and the spare cannot be spent on a call
+that has not finished failing yet.
+
+Recorded rather than fixed. A deadline per call is a change to how the panel
+behaves under failure, and this project's rule is that such a change is decided
+and not slipped in.
