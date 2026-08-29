@@ -136,3 +136,51 @@ defence seat, returned `position: not justified` and argued against the side he 
 seated on. That is the whole reason step 0 decided an advocate returns a position:
 without the field, the most interesting thing this panel can do would have happened
 silently.
+
+## 6 and 7 — The two waves
+
+The four advocates go out together and the three judges go out together after
+them, each agent on its own model. Sequence numbers say what a call was: one to
+four are the advocates in a fixed order, five to seven are the judges, and eight is
+left free for the one spare.
+
+**The first real advocate wave found the economics were wrong.** Cost was being
+worked out from OpenRouter's published price list, and for two of the four agents
+that list was not what the call was billed. `llama-3.3-70b` is listed at $0.71 per
+million each way and was charged $0.25 in and $0.75 out, because a gateway routes
+to whichever provider is serving the model and that provider sets its own price.
+And `gpt-5-nano` was charged an effective input rate a seventh of its list price,
+because the provider had seen the same prompt recently and discounted it.
+
+So the rates are now taken from what was actually billed and the cost from the
+figure the gateway reports. That always reconciles — tokens times rate is the cost,
+by construction — and it is the only version of the economics that matches a bill.
+
+There is an irony worth keeping for step 8. We concluded that caching cannot help a
+panel where no two agents share a model, and inside one deliberation that is true.
+But repeated smoke runs of the same prompt *were* discounted, which means these
+measurements understate what a cold run costs.
+
+**The first whole deliberation ran on 30 August: seven calls, seven complete, 20.2
+seconds, $0.0344.**
+
+Two of the four advocates reached the position their seat argues against, and they
+were not the same two that crossed in the wave before. The crossing is not a fixed
+property of one character. It is the simulation rule operating.
+
+The three judges split two to one, and the single sentence each was asked for
+carries three different methods rather than three summaries of one. Barak turned on
+imminence and less harmful means. Elon reached the halakhic doctrine of the rodef
+and treated Jewish law as a working legal source, which is what his profile says he
+does. Shamgar refused the act on institutional grounds — a private individual
+cannot execute a head of state — and never reached the moral question at all.
+**That is the field earning its thirty tokens: three judges agreeing would look
+identical in a table without it, and three judges disagreeing for the same reason
+would be a collapsed panel wearing a healthy face.**
+
+Two measurements against the essays, for step 8 to take up:
+
+- **Tokens: 16,462 against a claim of roughly 17,000.** The claim holds.
+- **Time: 20.2 seconds against a claim of about six.** The claim does not. The six
+  seconds came from the course; two waves of parallel calls on seven different
+  providers take three times that, and the judges are the slower half.
