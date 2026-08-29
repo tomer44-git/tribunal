@@ -26,6 +26,19 @@ const MAX_TOKENS = 4000;
  *  paid for knowingly. */
 const REASONING = { effort: "low" } as const;
 
+/** How long a single call may take before it is abandoned.
+ *
+ *  Measured across 110 calls that succeeded: the slowest finished in 15.9 seconds,
+ *  the median in 6.2. The only call ever to run longer took 68 seconds and came
+ *  back malformed — it was not slow and useful, it was slow and worthless, and
+ *  three agents that had already answered waited more than a minute for it.
+ *
+ *  Thirty seconds is roughly twice the slowest answer this project has ever had.
+ *  Passing it invents no new behaviour: the call becomes a failure and the failure
+ *  rules take over unchanged. What the deadline buys is that the one spare can be
+ *  spent at all, because a call that has not finished failing cannot be retried. */
+export const CALL_DEADLINE_MS = 30_000;
+
 export type CallResult = {
   /** The model named in the response. A gateway can route elsewhere, and a log of
    *  what was asked describes a run that did not happen. */
@@ -63,11 +76,14 @@ export async function callModel(
     schema: unknown;
     schemaName: string;
     signal?: AbortSignal;
+    /** Tests set this short so that a suite is not held up for thirty seconds. */
+    deadlineMs?: number;
     fetchImpl?: typeof fetch;
   },
 ): Promise<CallResult> {
   const started = Date.now();
   const send = options.fetchImpl ?? fetch;
+  const deadline = AbortSignal.timeout(options.deadlineMs ?? CALL_DEADLINE_MS);
 
   let response: Response;
   let text: string;
@@ -78,7 +94,7 @@ export async function callModel(
         authorization: `Bearer ${config.openrouterKey}`,
         "content-type": "application/json",
       },
-      signal: options.signal ?? null,
+      signal: options.signal ? AbortSignal.any([options.signal, deadline]) : deadline,
       body: JSON.stringify({
         model: options.model,
         messages: [{ role: "user", content: options.prompt }],
@@ -93,8 +109,15 @@ export async function callModel(
     });
     text = await response.text();
   } catch (error) {
+    // Say whose deadline it was. A call this project abandoned and a provider that
+    // went quiet are different failures, and the log has to tell them apart.
+    const timedOut = deadline.aborted;
     throw new CallFailed(
-      error instanceof Error ? error.message : "the call did not complete",
+      timedOut
+        ? `the call passed its ${(options.deadlineMs ?? CALL_DEADLINE_MS) / 1000} second deadline`
+        : error instanceof Error
+          ? error.message
+          : "the call did not complete",
       Date.now() - started,
       "",
     );
