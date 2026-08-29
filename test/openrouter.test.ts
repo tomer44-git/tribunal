@@ -85,7 +85,7 @@ test("prices come back per million and cost is worked out from them", async () =
   forgetPrices();
 });
 
-test("reasoning is asked to stay off, and the shape is asked for under the prompt", async () => {
+test("reasoning is asked to be brief, and the shape is asked for under the prompt", async () => {
   let sent: Record<string, unknown> = {};
   const capture = (async (_url: string, init: RequestInit) => {
     sent = JSON.parse(String(init.body));
@@ -97,7 +97,7 @@ test("reasoning is asked to stay off, and the shape is asked for under the promp
 
   await callModel(config, { model: "m", prompt: "p", schema: { type: "object" }, schemaName: "s", fetchImpl: capture });
 
-  assert.deepEqual(sent["reasoning"], { enabled: false });
+  assert.deepEqual(sent["reasoning"], { effort: "low" });
   assert.equal((sent["response_format"] as { type: string }).type, "json_schema");
   assert.equal(typeof sent["max_tokens"], "number");
 });

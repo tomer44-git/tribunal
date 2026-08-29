@@ -11,16 +11,20 @@ const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 /** A distant safety net. The real ceiling is in the wording of the prompts, because
  *  a token limit reached is an answer truncated mid-string, which is a parse
  *  failure we caused ourselves. */
-const MAX_TOKENS = 2000;
+const MAX_TOKENS = 4000;
 
-/** Hidden reasoning is billed as output, and output is most of what a deliberation
- *  costs. The first real call proved the sharper problem: a reasoning model spent
- *  all 1,984 of its output tokens thinking and returned no answer at all, which
- *  this system is obliged to record as malformed. The panel's product is the
- *  argument and the verdict, both in a fixed shape. If an agent ever needs to
- *  think at length, that is turned on for that agent on purpose and paid for
- *  knowingly. */
-const REASONING = { enabled: false } as const;
+/** Five of the seven models chosen are reasoning models, and hidden reasoning is
+ *  billed as output — which is most of what a deliberation costs. The first real
+ *  call proved the sharper problem: the model spent all 1,984 of its output tokens
+ *  thinking, wrote nothing, and had to be recorded as malformed. The second proved
+ *  that reasoning cannot simply be switched off: the provider answered
+ *  "reasoning is mandatory for this endpoint and cannot be disabled".
+ *
+ *  So it is asked to be brief instead. The panel's product is an argument or a
+ *  verdict in a fixed shape, not a long deliberation nobody reads. If an agent
+ *  ever needs to think at length, that is turned on for that agent on purpose and
+ *  paid for knowingly. */
+const REASONING = { effort: "low" } as const;
 
 export type CallResult = {
   /** The model named in the response. A gateway can route elsewhere, and a log of
