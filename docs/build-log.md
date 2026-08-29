@@ -212,3 +212,43 @@ Ten tests, none of them spending anything. The one worth naming asserts a negati
 after a run with a malformed judge and a failed one, no row that is not complete
 carries a position, a verdict or a controlling ground. The database refuses those
 rows as well, and neither check is relied on to cover the other.
+
+## 9 and 10 — The screen, and what the run cost
+
+The measurements from the first whole deliberation decided the shape of this. One
+judge call alone took 11.1 seconds and the run took 20.2, against a synchronous
+function limit of ten. `docs/01-architecture.md` said to keep the panel synchronous
+only while it fits and to move it behind a job when it stops fitting, so it has
+moved: `deliberate-background` answers 202 at once and may run for fifteen minutes,
+which Netlify allows on the free plan.
+
+Nothing was reversed to make this work and no document needed changing. The essay
+named the condition and the remedy before either was needed.
+
+The browser posts a case, starts a run, kicks off the job and then asks `runs` once
+a second what the server has written. **It decides nothing.** The page it draws is
+assembled from the rows, so what a reader sees and what the record holds cannot
+drift apart.
+
+The page carries the four arguments **by name and seat** — Jon Snow, defence — which
+is the other half of the decision that keeps names out of a judge's prompt. An
+advocate that reached the position its seat argues against is marked as having done
+so, because that is the simulation rule working and a reader should be able to see
+it without comparing two columns.
+
+The three opinions sit side by side. There is no majority, no summary and no
+ranking anywhere in `src/view.ts`, and a test asserts the view object carries no
+such field. A seat whose call failed shows the failure in its place. A run that
+finished with fewer than three opinions shows the opinions it has under a line
+saying it is not a finished result.
+
+Underneath is the table Mikael asked for: for every call, the model that answered,
+input and output tokens apart, the rate actually charged for each, the cost and the
+time — then the totals. **Every call is counted, including the ones that failed and
+any retry.** What the run cost is what was spent, not what succeeded.
+
+The browser runs the charge sheet rules before posting, importing the same module
+the server imports. Checked in a browser against the canonical case: T-001 loads
+with five agreed facts and 258 words of background, and removing its question
+produces `question — a charge sheet must carry its question` alongside every other
+failing field. The server runs the same rules again regardless.
