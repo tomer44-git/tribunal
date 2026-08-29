@@ -27,6 +27,18 @@ export const SEAT_OF: Record<(typeof ADVOCATES)[number], "defence" | "prosecutio
   grey_worm: "prosecution",
 };
 
+/** Full attribution belongs on the screen and in the log. It is only a judge's
+ *  prompt that sees a seat instead of a name. */
+export const NAME_OF: Record<Agent, string> = {
+  jon: "Jon Snow",
+  tyrion: "Tyrion Lannister",
+  daenerys: "Daenerys Targaryen",
+  grey_worm: "Grey Worm",
+  barak: "the Aaron Barak model",
+  elon: "the Menachem Elon model",
+  shamgar: "the Meir Shamgar model",
+};
+
 const MODEL_VAR: Record<Agent, string> = {
   jon: "MODEL_ADVOCATE_JON",
   tyrion: "MODEL_ADVOCATE_TYRION",

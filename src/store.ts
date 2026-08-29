@@ -123,6 +123,22 @@ export async function insertCall(config: Config, row: CallRow): Promise<{ id: st
   return written;
 }
 
+export async function findDeliberation(config: Config, id: string): Promise<Record<string, unknown> | null> {
+  const rows = (await request(
+    config,
+    `/deliberations?id=eq.${encodeURIComponent(id)}&select=*`,
+  )) as Record<string, unknown>[] | null;
+  return rows?.[0] ?? null;
+}
+
+export async function findCalls(config: Config, deliberationId: string): Promise<Record<string, unknown>[]> {
+  const rows = (await request(
+    config,
+    `/calls?deliberation_id=eq.${encodeURIComponent(deliberationId)}&select=*&order=seq.asc`,
+  )) as Record<string, unknown>[] | null;
+  return rows ?? [];
+}
+
 export async function findCase(config: Config, id: string): Promise<StoredCase | null> {
   const rows = (await request(config, `/cases?id=eq.${encodeURIComponent(id)}&select=*`)) as
     | StoredCase[]
