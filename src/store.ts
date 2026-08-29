@@ -1,0 +1,67 @@
+// The database, reached over its REST interface with fetch and nothing else.
+//
+// The key used here bypasses row-level security, so this module never runs
+// anywhere but inside a function. It holds no rules of its own: what may be
+// written is decided before anything gets here, and what may not be written is
+// refused by the database.
+
+import type { ChargeSheet } from "./charge-sheet.ts";
+import type { Config } from "./config.ts";
+
+export type StoredCase = ChargeSheet & { id: string; reference: string; created_at: string };
+
+export class StoreError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly detail: string,
+  ) {
+    super(message);
+    this.name = "StoreError";
+  }
+}
+
+async function request(
+  config: Config,
+  path: string,
+  init: RequestInit & { prefer?: string } = {},
+): Promise<unknown> {
+  const headers: Record<string, string> = {
+    apikey: config.supabaseSecretKey,
+    authorization: `Bearer ${config.supabaseSecretKey}`,
+    "content-type": "application/json",
+  };
+  if (init.prefer) headers["prefer"] = init.prefer;
+
+  const response = await fetch(`${config.supabaseUrl}/rest/v1${path}`, { ...init, headers });
+  const text = await response.text();
+  if (!response.ok) {
+    // The detail is kept for the log and never returned to a browser: it can
+    // quote the row that failed, and a row can hold anything a user typed.
+    throw new StoreError("the database refused the write", response.status, text);
+  }
+  return text.length > 0 ? JSON.parse(text) : null;
+}
+
+export async function insertCase(
+  config: Config,
+  sheet: ChargeSheet,
+  reference: string,
+): Promise<StoredCase> {
+  const rows = (await request(config, "/cases", {
+    method: "POST",
+    prefer: "return=representation",
+    body: JSON.stringify([{ ...sheet, reference }]),
+  })) as StoredCase[];
+
+  const row = rows?.[0];
+  if (!row) throw new StoreError("the database accepted the case and returned nothing", 500, "");
+  return row;
+}
+
+export async function findCase(config: Config, id: string): Promise<StoredCase | null> {
+  const rows = (await request(config, `/cases?id=eq.${encodeURIComponent(id)}&select=*`)) as
+    | StoredCase[]
+    | null;
+  return rows?.[0] ?? null;
+}
