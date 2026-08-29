@@ -5,9 +5,9 @@
   "type": "module",
   "description": "A panel of four advocates and three judges deliberates a charge sheet and returns three reasoned verdicts, never combined.",
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && cp -R public/. dist/",
+    "build": "rm -rf dist && mkdir -p dist && cp -R public/. dist/ && tsc -p tsconfig.browser.json",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types test/"
+    "test": "node --test \"test/**/*.test.ts\""
   },
   "devDependencies": {
     "@netlify/functions": "^2.8.2",
