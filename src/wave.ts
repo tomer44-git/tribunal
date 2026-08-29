@@ -82,23 +82,25 @@ export function priced(
   };
 }
 
-async function runOneAdvocate(
+export async function runOneAdvocate(
   config: Config,
   deliberationId: string,
   sheet: ChargeSheet,
   agent: (typeof ADVOCATES)[number],
   deps: Deps,
   prices: Map<string, Price>,
+  isRetry = false,
+  seq?: number,
 ): Promise<AdvocateResult> {
   const seat = SEAT_OF[agent];
   const model = config.models[agent];
   const base = {
     deliberation_id: deliberationId,
-    seq: SEQ_OF_ADVOCATE[agent],
+    seq: seq ?? SEQ_OF_ADVOCATE[agent],
     role: "advocate" as const,
     agent,
     seat,
-    is_retry: false,
+    is_retry: isRetry,
     model_requested: model,
     verdict: null,
     controlling_ground: null,
@@ -183,7 +185,7 @@ export type JudgeResult = {
   row: CallRow;
 };
 
-async function runOneJudge(
+export async function runOneJudge(
   config: Config,
   deliberationId: string,
   sheet: ChargeSheet,
@@ -191,16 +193,18 @@ async function runOneJudge(
   agent: (typeof JUDGES)[number],
   deps: Deps,
   prices: Map<string, Price>,
+  isRetry = false,
+  seq?: number,
 ): Promise<JudgeResult> {
   const model = config.models[agent];
   const base = {
     deliberation_id: deliberationId,
-    seq: SEQ_OF_JUDGE[agent],
+    seq: seq ?? SEQ_OF_JUDGE[agent],
     role: "judge" as const,
     agent,
     // A judge has no seat. It is not seated on a side and the column says so.
     seat: null,
-    is_retry: false,
+    is_retry: isRetry,
     model_requested: model,
     position: null,
   };

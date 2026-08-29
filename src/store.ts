@@ -94,6 +94,22 @@ export async function insertDeliberation(config: Config, caseId: string): Promis
   return row;
 }
 
+export async function updateDeliberation(
+  config: Config,
+  id: string,
+  fields: {
+    status: "running" | "complete" | "failed";
+    failed_at_wave?: "advocates" | "judges" | null;
+    retry_used?: boolean;
+    finished_at?: string;
+  },
+): Promise<void> {
+  await request(config, `/deliberations?id=eq.${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(fields),
+  });
+}
+
 /** Every model call gets its own row, including the ones that failed. A call that
  *  ran and was not written down did not happen. */
 export async function insertCall(config: Config, row: CallRow): Promise<{ id: string }> {
