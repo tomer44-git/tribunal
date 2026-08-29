@@ -59,6 +59,54 @@ export async function insertCase(
   return row;
 }
 
+export type CallRow = {
+  deliberation_id: string;
+  seq: number;
+  role: "advocate" | "judge";
+  agent: string;
+  seat: "defence" | "prosecution" | null;
+  is_retry: boolean;
+  status: "complete" | "malformed" | "failed";
+  model_requested: string;
+  model_answered: string | null;
+  position: string | null;
+  verdict: string | null;
+  reasons: string[] | null;
+  controlling_ground: string | null;
+  tokens_in: number;
+  tokens_out: number;
+  price_in_per_m: number | null;
+  price_out_per_m: number | null;
+  cost_usd: number | null;
+  latency_ms: number | null;
+  raw_response: string | null;
+  error: string | null;
+};
+
+export async function insertDeliberation(config: Config, caseId: string): Promise<{ id: string }> {
+  const rows = (await request(config, "/deliberations", {
+    method: "POST",
+    prefer: "return=representation",
+    body: JSON.stringify([{ case_id: caseId, status: "running" }]),
+  })) as { id: string }[];
+  const row = rows?.[0];
+  if (!row) throw new StoreError("the database accepted the run and returned nothing", 500, "");
+  return row;
+}
+
+/** Every model call gets its own row, including the ones that failed. A call that
+ *  ran and was not written down did not happen. */
+export async function insertCall(config: Config, row: CallRow): Promise<{ id: string }> {
+  const rows = (await request(config, "/calls", {
+    method: "POST",
+    prefer: "return=representation",
+    body: JSON.stringify([row]),
+  })) as { id: string }[];
+  const written = rows?.[0];
+  if (!written) throw new StoreError("the database accepted the call and returned nothing", 500, "");
+  return written;
+}
+
 export async function findCase(config: Config, id: string): Promise<StoredCase | null> {
   const rows = (await request(config, `/cases?id=eq.${encodeURIComponent(id)}&select=*`)) as
     | StoredCase[]
