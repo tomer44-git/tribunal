@@ -7,3 +7,10 @@
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
+
+# The functions are reached at /api/… so that the page is not written against a
+# platform's directory layout.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

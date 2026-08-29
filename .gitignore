@@ -4,3 +4,4 @@ node_modules/
 .env.local
 dist/
 src/prompts.generated.ts
+.claude/
