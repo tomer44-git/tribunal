@@ -229,5 +229,18 @@ function economics(view) {
   table.append(el("tfoot").appendChild(foot).parentNode);
 
   wrap.append(table);
+
+  const legend = el("dl", "legend");
+  const entry = (term, description) => {
+    legend.append(el("dt", null, term), el("dd", null, description));
+  };
+  entry("in", "Input tokens: the charge sheet, the block every agent in the wave shares, and that agent's own file — and, for a judge, the four submissions as well. Each provider counts with its own tokenizer, so these numbers are not comparable between rows.");
+  entry("out", "Output tokens: the answer, plus any hidden reasoning the model did before writing it. Reasoning is billed as output at the same rate, which is why it is the largest thing in this table.");
+  entry("$/M in", "What this call was actually charged per million input tokens — taken from the bill, not from a price list. A provider may discount input it has seen recently, and a gateway may route to a provider whose prices differ from the published ones.");
+  entry("$/M out", "The same, for output tokens.");
+  entry("cost", "in × $/M in, plus out × $/M out. It reconciles exactly, because the rates were worked out from this figure rather than the other way round.");
+  entry("ms", "How long the call took, from sending to the answer arriving. A wave finishes when its slowest member does. The figure in the last row is the whole run, both waves and everything between them.");
+  wrap.append(legend);
+
   return wrap;
 }
