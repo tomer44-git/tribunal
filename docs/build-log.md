@@ -77,3 +77,62 @@ an act whose text names only **Jon** — a whole-name match would have refused t
 one charge sheet the package fixes. The rule matches any part of the name instead.
 
 Fourteen tests, no model call, nothing spent.
+
+## 4 — Submission and storage
+
+`src/config.ts` reads the seven models and the two secrets and reports every
+missing name at once, to the function log and never to the caller: a list of what a
+server lacks is a map for anyone who wants one. The eight-call cap is a constant in
+that file rather than a variable, because a rule that can be raised by editing an
+environment is not a rule.
+
+`src/submit.ts` holds the decision and takes the store as an argument, so what
+happens when a charge sheet arrives can be tested without a database. When the
+database refuses a write, the message it returns can quote the row that failed, and
+a row holds whatever a user typed — so the detail goes to the log and the caller
+gets a bare 502.
+
+Four commits went out with a test failing. The pipeline I was running hid the exit
+code of `npm test` behind a `grep`. `CLAUDE.md` now says that no commit is pushed
+without a green test run, and that a pipe which hides an exit code is not a test
+run. The broken commits stand and the fixes sit after them.
+
+`erasableSyntaxOnly` was turned on after the first of those: TypeScript accepts
+`constructor(readonly x: T)` and Node, which only strips types, does not. The
+compiler now refuses what the runtime cannot run.
+
+## 5 — One call, logged
+
+The prompts are turned into a module at build time by `scripts/build-prompts.mjs`.
+A bundled function cannot reliably read files from the repository at run time, and
+the markdown has to stay the only place a prompt is written.
+
+**Three real calls were made and the first two failed. Both failures were worth
+more than the run that succeeded.**
+
+The first came back `finish_reason: length`, 1,984 completion tokens, of which
+1,984 were reasoning tokens, and no content at all. `max_tokens` is a budget shared
+between thinking and answering, and the model spent all of it thinking. The call
+was paid for in full and returned nothing, and was recorded as malformed.
+
+The second tried to switch reasoning off and the provider refused: *reasoning is
+mandatory for this endpoint and cannot be disabled*. Five of the seven models
+chosen are reasoning models, including all three judges, so this was never going to
+be one agent's problem.
+
+The third asked for brief reasoning and left room for the answer — `effort: low`,
+`max_tokens: 4000` — and came back complete in four seconds on 523 output tokens
+instead of 1,984. **The ceiling is free insurance; nothing is paid for a token that
+is not produced. What controls the bill is the reasoning effort.**
+
+Two things were confirmed on the way. OpenRouter reported the call's cost as
+$0.00085455 and this project worked out $0.000855 from its own price lookup, which
+means the economics are computed and not quoted. And the answering model is read
+from the response rather than assumed, so a run that is routed elsewhere will say
+so.
+
+**The simulation rule was observed on the first successful call.** Jon Snow, in the
+defence seat, returned `position: not justified` and argued against the side he was
+seated on. That is the whole reason step 0 decided an advocate returns a position:
+without the field, the most interesting thing this panel can do would have happened
+silently.
