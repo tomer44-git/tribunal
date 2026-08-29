@@ -184,3 +184,31 @@ Two measurements against the essays, for step 8 to take up:
 - **Time: 20.2 seconds against a claim of about six.** The claim does not. The six
   seconds came from the course; two waves of parallel calls on seven different
   providers take three times that, and the judges are the slower half.
+
+## 8 — Failure and the spare
+
+Built as its own step rather than folded into the two waves, because it is the
+behaviour most easily left half-done and hardest to notice missing.
+
+`src/deliberate.ts` holds the rules that no single call can hold. The spare goes to
+the first failure in a fixed agent order, so which agent claimed it never depends on
+which one happened to answer first. There is one spare for the whole run: a
+deliberation where an advocate needed a second ask sends its judges out with no net
+under them, and the tests say so.
+
+An advocate that is still not complete after the spare stops the run before the
+judge wave and is named. The judges are the expensive half and, with fewer than four
+submissions, they would be weighing a case no other run can be compared against.
+
+A judge that fails leaves the other two standing. Its seat carries a failure and no
+verdict, and the run is recorded as failed even though two opinions are returned and
+will be shown. Those two sentences from `CLAUDE.md` are not in tension: the opinions
+that arrived are displayed, and the run is never labelled finished.
+
+The spend cap is enforced between the waves, where it can still save something. If
+the advocates alone have reached it, the judges are never called.
+
+Ten tests, none of them spending anything. The one worth naming asserts a negative:
+after a run with a malformed judge and a failed one, no row that is not complete
+carries a position, a verdict or a controlling ground. The database refuses those
+rows as well, and neither check is relied on to cover the other.
