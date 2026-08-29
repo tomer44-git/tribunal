@@ -265,6 +265,21 @@ saying the panel is sitting, which is true. But a user watching it has no way to
 tell a slow provider from a broken one, and the spare cannot be spent on a call
 that has not finished failing yet.
 
-Recorded rather than fixed. A deadline per call is a change to how the panel
-behaves under failure, and this project's rule is that such a change is decided
-and not slipped in.
+Recorded rather than fixed at the time, because a deadline per call is a change to
+how the panel behaves under failure and this project's rule is that such a change
+is decided and not slipped in.
+
+**It was then decided.** Every call now carries a deadline of thirty seconds. The
+number comes from the log rather than from taste: across 110 calls that succeeded,
+the slowest finished in 15.9 seconds and the median in 6.2, so thirty is roughly
+twice the slowest answer this project has ever received. The one call that ever ran
+longer took 68 seconds and came back malformed.
+
+The deadline invents no behaviour. A call that passes it is a failure, and the
+failure rules take over unchanged — the spare is spent if it is unspent, an
+advocate failure stops the run before the judge wave, a judge failure leaves the
+other two opinions standing. What it buys is that the spare can be spent at all: a
+call that has not finished failing cannot be retried.
+
+The message records whose deadline it was, so that a call this project abandoned
+and a provider that went quiet are told apart in the log.

@@ -53,8 +53,14 @@ that decides anything runs in the browser.
 
     cp .env.example .env     # then fill in the three secrets
     npm install
-    npm test                 # 89 checks, no model calls, nothing spent
+    npm run build            # the browser's copy of the charge sheet rules
+    npm test                 # 91 checks, no model calls, nothing spent
     npx netlify dev          # the app, against real models and a real database
+
+The build comes before the tests on purpose. One check compares the browser's copy
+of the charge sheet rules against the server's, and it can only do that once the
+build has emitted the browser copy. Without it that check skips rather than fails,
+which is the quietest way for a test suite to lie.
 
 The schema is in [`db/`](db/) and is applied by hand. `db/checks/001-constraints.sql`
 asks the database whether it still refuses what it is supposed to refuse.

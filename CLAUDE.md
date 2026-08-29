@@ -133,8 +133,10 @@ shape twice, and check it on the way in. The second ask is the one spare call, s
 it is one retry per deliberation and not one per agent — the first failure of any
 kind claims it, and the next failure in that run has no retry left.
 
-A model call may time out. Retry once if the spare is still unspent, then show the
-failure.
+A model call may take longer than it is worth waiting for. Every call carries its
+own deadline, because a wave finishes when its slowest member does and a call that
+has not finished failing cannot be retried. Passing the deadline is a failure like
+any other: retry once if the spare is still unspent, then show it.
 
 Seven agents on seven models are seven providers that can be rate-limited, queued
 or down, and only one of those failures can be retried. One model for everyone had

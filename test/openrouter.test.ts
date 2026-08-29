@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { callModel, CallFailed } from "../src/openrouter.ts";
+import { callModel, CallFailed, CALL_DEADLINE_MS } from "../src/openrouter.ts";
 import { loadPrices, forgetPrices, costOf } from "../src/pricing.ts";
 import type { Config } from "../src/config.ts";
 
@@ -134,4 +134,40 @@ test("reasoning is asked to be brief, and the shape is asked for under the promp
   assert.deepEqual(sent["reasoning"], { effort: "low" });
   assert.equal((sent["response_format"] as { type: string }).type, "json_schema");
   assert.equal(typeof sent["max_tokens"], "number");
+});
+
+test("a call that runs past its deadline is abandoned and named as ours", async () => {
+  const neverAnswers = ((_url: string, init: RequestInit) =>
+    new Promise((_resolve, reject) => {
+      init.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+    })) as unknown as typeof fetch;
+
+  const started = Date.now();
+  await assert.rejects(
+    () =>
+      callModel(config, {
+        model: "m",
+        prompt: "p",
+        schema: {},
+        schemaName: "s",
+        deadlineMs: 40,
+        fetchImpl: neverAnswers,
+      }),
+    (error: unknown) => {
+      assert.ok(error instanceof CallFailed);
+      // The message says whose deadline it was. A provider that went quiet and a
+      // call this project gave up on are different failures.
+      assert.match(error.message, /passed its .* deadline/);
+      assert.ok(error.latencyMs >= 40);
+      return true;
+    },
+  );
+  assert.ok(Date.now() - started < 5000, "it did not wait for the provider");
+});
+
+test("the deadline is twice the slowest answer this project has measured", () => {
+  // 110 successful calls, slowest 15.9 seconds. If this number is ever lowered
+  // below that, working calls start being thrown away.
+  assert.ok(CALL_DEADLINE_MS >= 20_000, "a deadline under 20s would refuse answers that arrive");
+  assert.ok(CALL_DEADLINE_MS <= 60_000, "a deadline over a minute cannot be spent on a retry in time");
 });
