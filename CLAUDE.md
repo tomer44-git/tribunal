@@ -30,6 +30,9 @@ that serves the record rather than a step begins with `record:`. Each step also
 ends with a commit that says the step is closed, and carries a tag named for it.
 The history has to show where I was, not only what changed.
 
+No commit is pushed without a green test run. A pipe that hides an exit code is
+not a test run.
+
 Never amend, squash, rebase or force push. A messy honest history is worth more
 than a clean invented one.
 
